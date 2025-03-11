@@ -3,7 +3,7 @@ import 'package:dio/dio.dart';
 import 'package:path_provider/path_provider.dart';
 
 class VideoDownloader {
-  Future<String?> downloadVideo(String videoUrl) async {
+  static Future<String?> downloadVideo(String videoUrl) async {
     try {
       final Directory directory = await getApplicationDocumentsDirectory();
       final String filePath = '${directory.path}/video.mp4';

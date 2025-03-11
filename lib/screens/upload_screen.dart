@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
-class VideoScreen extends StatefulWidget {
-  const VideoScreen({super.key});
+class UploadScreen extends StatefulWidget {
+  const UploadScreen({super.key});
 
   @override
-  _VideoScreenState createState() => _VideoScreenState();
+  UploadScreenState createState() => UploadScreenState();
 }
 
-class _VideoScreenState extends State<VideoScreen> {
+class UploadScreenState extends State<UploadScreen> { // ✅ Clase pública corregida
   late VideoPlayerController _controller;
 
   @override

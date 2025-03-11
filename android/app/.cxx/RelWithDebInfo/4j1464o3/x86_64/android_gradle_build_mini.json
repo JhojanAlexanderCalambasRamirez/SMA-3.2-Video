@@ -1,0 +1,20 @@
+{
+  "buildFiles": [
+    "C:\\src\\flutter\\packages\\flutter_tools\\gradle\\src\\main\\groovy\\CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "C:\\Users\\alexa\\AppData\\Local\\Android\\sdk\\cmake\\3.22.1\\bin\\ninja.exe",
+      "-C",
+      "C:\\Users\\alexa\\Downloads\\Universidad 2025\\2025 - 01\\Sistema Multimedia Audiovisuales\\Corte 1\\App-Vid\\flutter_application_1\\android\\app\\.cxx\\RelWithDebInfo\\4j1464o3\\x86_64",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "C:\\Users\\alexa\\AppData\\Local\\Android\\sdk\\cmake\\3.22.1\\bin\\ninja.exe",
+    "-C",
+    "C:\\Users\\alexa\\Downloads\\Universidad 2025\\2025 - 01\\Sistema Multimedia Audiovisuales\\Corte 1\\App-Vid\\flutter_application_1\\android\\app\\.cxx\\RelWithDebInfo\\4j1464o3\\x86_64",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {}
+}

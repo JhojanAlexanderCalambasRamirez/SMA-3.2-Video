@@ -1,23 +1,60 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
+import 'dart:io';
+import '../utils/storage_manager.dart';
+import '../utils/video_downloader.dart';
 
 class VideoScreen extends StatefulWidget {
-  const VideoScreen({super.key});
+  final String videoId;
+  final String? videoUrl;
+
+  const VideoScreen({super.key, required this.videoId, this.videoUrl});
 
   @override
-  _VideoScreenState createState() => _VideoScreenState();
+  VideoScreenState createState() => VideoScreenState();
 }
 
-class _VideoScreenState extends State<VideoScreen> {
+class VideoScreenState extends State<VideoScreen> {
   late VideoPlayerController _controller;
+  bool _isLoading = true;
+  String? _localVideoPath;
 
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.asset('assets/videos/VideoEjemplo.mp4')
-      ..initialize().then((_) {
-        setState(() {}); // Refresca la UI cuando el video está listo
+    _loadVideo();
+  }
+
+  Future<void> _loadVideo() async {
+    _localVideoPath = await StorageManager.getData(widget.videoId);
+
+    if (_localVideoPath != null && File(_localVideoPath!).existsSync()) {
+      _initializeVideo(File(_localVideoPath!).path);
+    } else if (widget.videoUrl != null) {
+      _localVideoPath = await VideoDownloader.downloadVideo(widget.videoUrl!);
+      if (_localVideoPath != null) {
+        await StorageManager.saveData(widget.videoId, _localVideoPath!);
+        _initializeVideo(_localVideoPath!);
+      } else {
+        _initializeVideo("assets/videos/VideoEjemplo.mp4", isAsset: true);
+      }
+    } else {
+      _initializeVideo("assets/videos/VideoEjemplo.mp4", isAsset: true);
+    }
+  }
+
+  void _initializeVideo(String path, {bool isAsset = false}) {
+    _controller = isAsset
+        ? VideoPlayerController.asset(path)
+        : VideoPlayerController.file(File(path));
+
+    _controller.initialize().then((_) {
+      setState(() {
+        _isLoading = false;
       });
+    }).catchError((error) {
+      debugPrint("Error al inicializar el video: $error");
+    });
   }
 
   void _seekVideo(bool forward) {
@@ -36,18 +73,18 @@ class _VideoScreenState extends State<VideoScreen> {
         onTapUp: (TapUpDetails details) {
           final double screenWidth = MediaQuery.of(context).size.width;
           if (details.globalPosition.dx < screenWidth / 2) {
-            _seekVideo(false); // Retroceder
+            _seekVideo(false);
           } else {
-            _seekVideo(true); // Adelantar
+            _seekVideo(true);
           }
         },
         child: Center(
-          child: _controller.value.isInitialized
-              ? AspectRatio(
+          child: _isLoading
+              ? const CircularProgressIndicator()
+              : AspectRatio(
                   aspectRatio: _controller.value.aspectRatio,
                   child: VideoPlayer(_controller),
-                )
-              : const CircularProgressIndicator(),
+                ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
@@ -57,7 +94,8 @@ class _VideoScreenState extends State<VideoScreen> {
           });
         },
         child: Icon(
-            _controller.value.isPlaying ? Icons.pause : Icons.play_arrow),
+          _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
+        ),
       ),
     );
   }
