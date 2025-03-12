@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'dart:io';
-import '../utils/storage_manager.dart';
-import '../utils/video_downloader.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_application_1/utils/storage_manager.dart';
+import 'package:flutter_application_1/utils/video_downloader.dart';
+import 'package:flutter_application_1/utils/video_styles.dart'; // Importa los estilos
 
 class VideoScreen extends StatefulWidget {
   final String videoId;
@@ -17,6 +19,7 @@ class VideoScreen extends StatefulWidget {
 class VideoScreenState extends State<VideoScreen> {
   late VideoPlayerController _controller;
   bool _isLoading = true;
+  bool _showControls = true;
   String? _localVideoPath;
 
   @override
@@ -36,10 +39,10 @@ class VideoScreenState extends State<VideoScreen> {
         await StorageManager.saveData(widget.videoId, _localVideoPath!);
         _initializeVideo(_localVideoPath!);
       } else {
-        _initializeVideo("assets/videos/VideoEjemplo.mp4", isAsset: true);
+        _initializeVideo('assets/videos/VideoEjemplo.mp4', isAsset: true);
       }
     } else {
-      _initializeVideo("assets/videos/VideoEjemplo.mp4", isAsset: true);
+      _initializeVideo('assets/videos/VideoEjemplo.mp4', isAsset: true);
     }
   }
 
@@ -53,48 +56,79 @@ class VideoScreenState extends State<VideoScreen> {
         _isLoading = false;
       });
     }).catchError((error) {
-      debugPrint("Error al inicializar el video: $error");
+      debugPrint('Error al inicializar el video: $error');
     });
   }
 
   void _seekVideo(bool forward) {
+    if (!_controller.value.isInitialized) return;
+
     final position = _controller.value.position;
-    final newPosition = forward
+    final duration = _controller.value.duration;
+
+    Duration newPosition = forward
         ? position + const Duration(seconds: 10)
         : position - const Duration(seconds: 10);
+
+    if (newPosition < Duration.zero) newPosition = Duration.zero;
+    if (newPosition > duration) newPosition = duration;
+
     _controller.seekTo(newPosition);
+  }
+
+  void _toggleFullScreen() {
+    if (MediaQuery.of(context).orientation == Orientation.portrait) {
+      SystemChrome.setPreferredOrientations(
+          [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
+    } else {
+      SystemChrome.setPreferredOrientations(
+          [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+    }
+  }
+
+  void _toggleControls() {
+    setState(() {
+      _showControls = !_showControls;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Video Interactivo")),
+      appBar: AppBar(title: const Text('Video Interactivo')),
       body: GestureDetector(
-        onTapUp: (TapUpDetails details) {
-          final double screenWidth = MediaQuery.of(context).size.width;
-          if (details.globalPosition.dx < screenWidth / 2) {
-            _seekVideo(false);
-          } else {
-            _seekVideo(true);
-          }
-        },
+        onTap: _toggleControls,
         child: Center(
           child: _isLoading
               ? const CircularProgressIndicator()
-              : AspectRatio(
-                  aspectRatio: _controller.value.aspectRatio,
-                  child: VideoPlayer(_controller),
+              : Stack(
+                  alignment: Alignment.bottomCenter,
+                  children: [
+                    AspectRatio(
+                      aspectRatio: _controller.value.aspectRatio,
+                      child: VideoPlayer(_controller),
+                    ),
+                    if (_showControls)
+                      Positioned(
+                        bottom: 10,
+                        left: 0,
+                        right: 0,
+                        child: videoControls(
+                          onRewind: () => _seekVideo(false),
+                          onPlayPause: () {
+                            setState(() {
+                              _controller.value.isPlaying
+                                  ? _controller.pause()
+                                  : _controller.play();
+                            });
+                          },
+                          onForward: () => _seekVideo(true),
+                          onFullScreen: _toggleFullScreen,
+                          isPlaying: _controller.value.isPlaying,
+                        ),
+                      ),
+                  ],
                 ),
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          setState(() {
-            _controller.value.isPlaying ? _controller.pause() : _controller.play();
-          });
-        },
-        child: Icon(
-          _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
         ),
       ),
     );

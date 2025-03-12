@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
+import 'package:flutter_application_1/utils/video_styles.dart';
+import 'package:flutter/services.dart'; // ✅ Importar para SystemChrome y DeviceOrientation
 
 class UploadScreen extends StatefulWidget {
   const UploadScreen({super.key});
@@ -8,7 +10,7 @@ class UploadScreen extends StatefulWidget {
   UploadScreenState createState() => UploadScreenState();
 }
 
-class UploadScreenState extends State<UploadScreen> { // ✅ Clase pública corregida
+class UploadScreenState extends State<UploadScreen> {
   late VideoPlayerController _controller;
 
   @override
@@ -16,50 +18,72 @@ class UploadScreenState extends State<UploadScreen> { // ✅ Clase pública corr
     super.initState();
     _controller = VideoPlayerController.asset('assets/videos/VideoEjemplo.mp4')
       ..initialize().then((_) {
-        setState(() {}); // Refresca la UI cuando el video está listo
+        setState(() {});
       }).catchError((error) {
-        print("Error al cargar el video: $error");
+        debugPrint('Error al cargar el video: $error');
       });
   }
 
   void _seekVideo(bool forward) {
+    if (!_controller.value.isInitialized) return;
+
     final position = _controller.value.position;
-    final newPosition = forward
+    final duration = _controller.value.duration;
+
+    Duration newPosition = forward
         ? position + const Duration(seconds: 10)
         : position - const Duration(seconds: 10);
+
+    // Asegurar que el video no se salga del rango permitido
+    if (newPosition < Duration.zero) newPosition = Duration.zero;
+    if (newPosition > duration) newPosition = duration;
+
     _controller.seekTo(newPosition);
+  }
+
+  void _toggleFullScreen() {
+    if (MediaQuery.of(context).orientation == Orientation.portrait) {
+      SystemChrome.setPreferredOrientations([
+        DeviceOrientation.landscapeLeft,
+        DeviceOrientation.landscapeRight
+      ]);
+    } else {
+      SystemChrome.setPreferredOrientations([
+        DeviceOrientation.portraitUp,
+        DeviceOrientation.portraitDown
+      ]);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Video Interactivo")),
-      body: GestureDetector(
-        onTapUp: (TapUpDetails details) {
-          final double screenWidth = MediaQuery.of(context).size.width;
-          if (details.globalPosition.dx < screenWidth / 2) {
-            _seekVideo(false); // Retroceder
-          } else {
-            _seekVideo(true); // Adelantar
-          }
-        },
-        child: Center(
-          child: _controller.value.isInitialized
-              ? AspectRatio(
-                  aspectRatio: _controller.value.aspectRatio,
-                  child: VideoPlayer(_controller),
-                )
-              : const CircularProgressIndicator(),
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          setState(() {
-            _controller.value.isPlaying ? _controller.pause() : _controller.play();
-          });
-        },
-        child: Icon(
-            _controller.value.isPlaying ? Icons.pause : Icons.play_arrow),
+      appBar: AppBar(title: const Text('Subir Video')),
+      body: Center(
+        child: _controller.value.isInitialized
+            ? Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  AspectRatio(
+                    aspectRatio: _controller.value.aspectRatio,
+                    child: VideoPlayer(_controller),
+                  ),
+                  videoControls(
+                    onRewind: () => _seekVideo(false),
+                    onPlayPause: () {
+                      setState(() {
+                        _controller.value.isPlaying
+                            ? _controller.pause()
+                            : _controller.play();
+                      });
+                    },
+                    onForward: () => _seekVideo(true),
+                    onFullScreen: _toggleFullScreen, // ✅ Se añade el parámetro obligatorio
+                    isPlaying: _controller.value.isPlaying,
+                  ),
+                ],
+              )
+            : const CircularProgressIndicator(),
       ),
     );
   }

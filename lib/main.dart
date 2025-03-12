@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'screens/home_screen.dart';
-import 'screens/trends_screen.dart';
-import 'screens/upload_screen.dart';
-import 'screens/library_screen.dart';
-import 'screens/account_screen.dart';
+import 'package:flutter_application_1/screens/home_screen.dart';
+import 'package:flutter_application_1/screens/trends_screen.dart';
+import 'package:flutter_application_1/screens/upload_screen.dart';
+import 'package:flutter_application_1/screens/library_screen.dart';
+import 'package:flutter_application_1/screens/account_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -67,7 +67,8 @@ class _HomePageState extends State<HomePage> {
           BottomNavigationBarItem(icon: Icon(Icons.account_circle), label: 'Cuenta'),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Theme.of(context).colorScheme.primary,
+        selectedItemColor: Colors.deepPurple,
+        unselectedItemColor: Colors.grey,
         onTap: _onItemTapped,
       ),
     );
