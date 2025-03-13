@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/screens/home_screen.dart';
-import 'package:flutter_application_1/screens/trends_screen.dart';
-import 'package:flutter_application_1/screens/upload_screen.dart';
-import 'package:flutter_application_1/screens/library_screen.dart';
-import 'package:flutter_application_1/screens/account_screen.dart';
+import 'package:flutter_application_1/routes/app_routes.dart';
 
 void main() {
   runApp(const MyApp());
@@ -21,56 +17,8 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const HomePage(),
-    );
-  }
-}
-
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
-
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  int _selectedIndex = 0;
-
-  static final List<Widget> _pages = <Widget>[
-    const HomeScreen(),
-    const TrendsScreen(),
-    const UploadScreen(),
-    const LibraryScreen(),
-    const AccountScreen(),
-  ];
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Sistema Multimedia Audiovisuales'),
-        backgroundColor: Theme.of(context).colorScheme.primary,
-      ),
-      body: _pages[_selectedIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Inicio'),
-          BottomNavigationBarItem(icon: Icon(Icons.trending_up), label: 'Tendencias'),
-          BottomNavigationBarItem(icon: Icon(Icons.upload), label: 'Subir'),
-          BottomNavigationBarItem(icon: Icon(Icons.video_library), label: 'Biblioteca'),
-          BottomNavigationBarItem(icon: Icon(Icons.account_circle), label: 'Cuenta'),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.deepPurple,
-        unselectedItemColor: Colors.grey,
-        onTap: _onItemTapped,
-      ),
+      initialRoute: '/',
+      routes: AppRoutes.routes,
     );
   }
 }

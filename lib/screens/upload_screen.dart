@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_application_1/utils/video_styles.dart';
+import 'package:flutter_application_1/utils/video_controls.dart';
 
 class UploadScreen extends StatefulWidget {
   const UploadScreen({super.key});
@@ -72,7 +72,9 @@ class UploadScreenState extends State<UploadScreen> {
                 children: [
                   Flexible(
                     child: AspectRatio(
-                      aspectRatio: _controller.value.aspectRatio,
+                      aspectRatio: isFullScreen
+                          ? MediaQuery.of(context).size.aspectRatio
+                          : _controller.value.aspectRatio,
                       child: VideoPlayer(_controller),
                     ),
                   ),

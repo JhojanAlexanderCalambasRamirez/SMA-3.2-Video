@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'dart:io';
 import 'package:flutter/services.dart';
-import 'package:flutter_application_1/utils/video_styles.dart';
+import 'package:flutter_application_1/utils/video_controls.dart';
 import 'package:flutter_application_1/utils/storage_manager.dart';
 import 'package:flutter_application_1/utils/video_downloader.dart';
 
@@ -20,7 +20,6 @@ class VideoScreenState extends State<VideoScreen> {
   late VideoPlayerController _controller;
   bool _isLoading = true;
   bool isFullScreen = false;
-
   String? _localVideoPath;
 
   @override
@@ -109,7 +108,9 @@ class VideoScreenState extends State<VideoScreen> {
                 children: [
                   Flexible(
                     child: AspectRatio(
-                      aspectRatio: _controller.value.aspectRatio,
+                      aspectRatio: isFullScreen
+                          ? MediaQuery.of(context).size.aspectRatio
+                          : _controller.value.aspectRatio,
                       child: VideoPlayer(_controller),
                     ),
                   ),
