@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_application_1/utils/video_styles.dart';
-import 'package:flutter/services.dart'; // ✅ Importar para SystemChrome y DeviceOrientation
 
 class UploadScreen extends StatefulWidget {
   const UploadScreen({super.key});
@@ -12,6 +12,7 @@ class UploadScreen extends StatefulWidget {
 
 class UploadScreenState extends State<UploadScreen> {
   late VideoPlayerController _controller;
+  bool isFullScreen = false;
 
   @override
   void initState() {
@@ -34,7 +35,6 @@ class UploadScreenState extends State<UploadScreen> {
         ? position + const Duration(seconds: 10)
         : position - const Duration(seconds: 10);
 
-    // Asegurar que el video no se salga del rango permitido
     if (newPosition < Duration.zero) newPosition = Duration.zero;
     if (newPosition > duration) newPosition = duration;
 
@@ -42,12 +42,18 @@ class UploadScreenState extends State<UploadScreen> {
   }
 
   void _toggleFullScreen() {
-    if (MediaQuery.of(context).orientation == Orientation.portrait) {
+    setState(() {
+      isFullScreen = !isFullScreen;
+    });
+
+    if (isFullScreen) {
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
       SystemChrome.setPreferredOrientations([
         DeviceOrientation.landscapeLeft,
         DeviceOrientation.landscapeRight
       ]);
     } else {
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
       SystemChrome.setPreferredOrientations([
         DeviceOrientation.portraitUp,
         DeviceOrientation.portraitDown
@@ -58,27 +64,31 @@ class UploadScreenState extends State<UploadScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Subir Video')),
+      appBar: isFullScreen ? null : AppBar(title: const Text('Subir Video')),
       body: Center(
         child: _controller.value.isInitialized
             ? Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  AspectRatio(
-                    aspectRatio: _controller.value.aspectRatio,
-                    child: VideoPlayer(_controller),
+                  Flexible(
+                    child: AspectRatio(
+                      aspectRatio: _controller.value.aspectRatio,
+                      child: VideoPlayer(_controller),
+                    ),
                   ),
                   videoControls(
                     onRewind: () => _seekVideo(false),
                     onPlayPause: () {
                       setState(() {
-                        _controller.value.isPlaying
-                            ? _controller.pause()
-                            : _controller.play();
+                        if (_controller.value.isPlaying) {
+                          _controller.pause();
+                        } else {
+                          _controller.play();
+                        }
                       });
                     },
                     onForward: () => _seekVideo(true),
-                    onFullScreen: _toggleFullScreen, // ✅ Se añade el parámetro obligatorio
+                    onFullScreen: _toggleFullScreen,
                     isPlaying: _controller.value.isPlaying,
                   ),
                 ],

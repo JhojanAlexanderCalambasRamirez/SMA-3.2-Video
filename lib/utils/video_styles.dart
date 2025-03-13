@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 
-// Colores y estilos generales
 const Color controlBackgroundColor = Colors.black54;
 const EdgeInsets controlPadding = EdgeInsets.symmetric(vertical: 10, horizontal: 20);
 const double iconSize = 40.0;
 const Color iconColor = Colors.white;
 
-// Widget de los controles del reproductor de video
 Widget videoControls({
   required VoidCallback onRewind,
   required VoidCallback onPlayPause,

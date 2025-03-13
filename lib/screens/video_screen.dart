@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'dart:io';
 import 'package:flutter/services.dart';
+import 'package:flutter_application_1/utils/video_styles.dart';
 import 'package:flutter_application_1/utils/storage_manager.dart';
 import 'package:flutter_application_1/utils/video_downloader.dart';
-import 'package:flutter_application_1/utils/video_styles.dart'; // Importa los estilos
 
 class VideoScreen extends StatefulWidget {
   final String videoId;
@@ -19,7 +19,8 @@ class VideoScreen extends StatefulWidget {
 class VideoScreenState extends State<VideoScreen> {
   late VideoPlayerController _controller;
   bool _isLoading = true;
-  bool _showControls = true;
+  bool isFullScreen = false;
+
   String? _localVideoPath;
 
   @override
@@ -77,59 +78,58 @@ class VideoScreenState extends State<VideoScreen> {
   }
 
   void _toggleFullScreen() {
-    if (MediaQuery.of(context).orientation == Orientation.portrait) {
-      SystemChrome.setPreferredOrientations(
-          [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
-    } else {
-      SystemChrome.setPreferredOrientations(
-          [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
-    }
-  }
-
-  void _toggleControls() {
     setState(() {
-      _showControls = !_showControls;
+      isFullScreen = !isFullScreen;
     });
+
+    if (isFullScreen) {
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+      SystemChrome.setPreferredOrientations([
+        DeviceOrientation.landscapeLeft,
+        DeviceOrientation.landscapeRight
+      ]);
+    } else {
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+      SystemChrome.setPreferredOrientations([
+        DeviceOrientation.portraitUp,
+        DeviceOrientation.portraitDown
+      ]);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Video Interactivo')),
-      body: GestureDetector(
-        onTap: _toggleControls,
-        child: Center(
-          child: _isLoading
-              ? const CircularProgressIndicator()
-              : Stack(
-                  alignment: Alignment.bottomCenter,
-                  children: [
-                    AspectRatio(
+      appBar: isFullScreen ? null : AppBar(title: const Text('Video Interactivo')),
+      body: Center(
+        child: _isLoading
+            ? const CircularProgressIndicator()
+            : Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Flexible(
+                    child: AspectRatio(
                       aspectRatio: _controller.value.aspectRatio,
                       child: VideoPlayer(_controller),
                     ),
-                    if (_showControls)
-                      Positioned(
-                        bottom: 10,
-                        left: 0,
-                        right: 0,
-                        child: videoControls(
-                          onRewind: () => _seekVideo(false),
-                          onPlayPause: () {
-                            setState(() {
-                              _controller.value.isPlaying
-                                  ? _controller.pause()
-                                  : _controller.play();
-                            });
-                          },
-                          onForward: () => _seekVideo(true),
-                          onFullScreen: _toggleFullScreen,
-                          isPlaying: _controller.value.isPlaying,
-                        ),
-                      ),
-                  ],
-                ),
-        ),
+                  ),
+                  videoControls(
+                    onRewind: () => _seekVideo(false),
+                    onPlayPause: () {
+                      setState(() {
+                        if (_controller.value.isPlaying) {
+                          _controller.pause();
+                        } else {
+                          _controller.play();
+                        }
+                      });
+                    },
+                    onForward: () => _seekVideo(true),
+                    onFullScreen: _toggleFullScreen,
+                    isPlaying: _controller.value.isPlaying,
+                  ),
+                ],
+              ),
       ),
     );
   }
