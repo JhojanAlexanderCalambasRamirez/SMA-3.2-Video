@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:video_player/video_player.dart';
 
 const Color controlBackgroundColor = Colors.black54;
 const EdgeInsets controlPadding = EdgeInsets.symmetric(vertical: 10, horizontal: 20);
@@ -6,11 +7,11 @@ const double iconSize = 40.0;
 const Color iconColor = Colors.white;
 
 Widget videoControls({
+  required VideoPlayerController controller,
   required VoidCallback onRewind,
   required VoidCallback onPlayPause,
   required VoidCallback onForward,
   required VoidCallback onFullScreen,
-  required bool isPlaying,
 }) {
   return Container(
     color: controlBackgroundColor,
@@ -24,7 +25,7 @@ Widget videoControls({
         ),
         IconButton(
           icon: Icon(
-            isPlaying ? Icons.pause : Icons.play_arrow,
+            controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
             size: iconSize,
             color: iconColor,
           ),

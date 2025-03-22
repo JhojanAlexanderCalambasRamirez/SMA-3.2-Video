@@ -6,17 +6,18 @@ import 'package:flutter_application_1/utils/video_controls.dart';
 import 'package:flutter_application_1/utils/storage_manager.dart';
 import 'package:flutter_application_1/utils/video_downloader.dart';
 
-class VideoScreen extends StatefulWidget {
-  final String videoId;
+class VideoPlayerScreen extends StatefulWidget {
+  final String? videoId;
   final String? videoUrl;
+  final String? assetPath;
 
-  const VideoScreen({super.key, required this.videoId, this.videoUrl});
+  const VideoPlayerScreen({super.key, this.videoId, this.videoUrl, this.assetPath});
 
   @override
-  VideoScreenState createState() => VideoScreenState();
+  VideoPlayerScreenState createState() => VideoPlayerScreenState();
 }
 
-class VideoScreenState extends State<VideoScreen> {
+class VideoPlayerScreenState extends State<VideoPlayerScreen> {
   late VideoPlayerController _controller;
   bool _isLoading = true;
   bool isFullScreen = false;
@@ -29,20 +30,22 @@ class VideoScreenState extends State<VideoScreen> {
   }
 
   Future<void> _loadVideo() async {
-    _localVideoPath = await StorageManager.getData(widget.videoId);
+    if (widget.videoId != null) {
+      _localVideoPath = await StorageManager.getData(widget.videoId!);
+    }
 
     if (_localVideoPath != null && File(_localVideoPath!).existsSync()) {
       _initializeVideo(File(_localVideoPath!).path);
     } else if (widget.videoUrl != null) {
       _localVideoPath = await VideoDownloader.downloadVideo(widget.videoUrl!);
       if (_localVideoPath != null) {
-        await StorageManager.saveData(widget.videoId, _localVideoPath!);
+        await StorageManager.saveData(widget.videoId!, _localVideoPath!);
         _initializeVideo(_localVideoPath!);
       } else {
-        _initializeVideo('assets/videos/VideoEjemplo.mp4', isAsset: true);
+        _initializeVideo(widget.assetPath ?? 'assets/videos/VideoEjemplo.mp4', isAsset: true);
       }
     } else {
-      _initializeVideo('assets/videos/VideoEjemplo.mp4', isAsset: true);
+      _initializeVideo(widget.assetPath ?? 'assets/videos/VideoEjemplo.mp4', isAsset: true);
     }
   }
 
@@ -56,7 +59,7 @@ class VideoScreenState extends State<VideoScreen> {
         _isLoading = false;
       });
     }).catchError((error) {
-      debugPrint('Error al inicializar el video: $error');
+      debugPrint('❌ Error al inicializar el video: $error');
     });
   }
 
@@ -66,6 +69,11 @@ class VideoScreenState extends State<VideoScreen> {
     final position = _controller.value.position;
     final duration = _controller.value.duration;
 
+    if (duration.inSeconds == 0) {
+      debugPrint('⚠️ No se puede adelantar/retroceder, duración 0.');
+      return;
+    }
+
     Duration newPosition = forward
         ? position + const Duration(seconds: 10)
         : position - const Duration(seconds: 10);
@@ -73,7 +81,12 @@ class VideoScreenState extends State<VideoScreen> {
     if (newPosition < Duration.zero) newPosition = Duration.zero;
     if (newPosition > duration) newPosition = duration;
 
-    _controller.seekTo(newPosition);
+    _controller.seekTo(newPosition).then((_) {
+      debugPrint('✅ Video en ${_controller.value.position.inSeconds} segundos.');
+      _controller.play();
+    }).catchError((error) {
+      debugPrint('❌ Error al cambiar posición: $error');
+    });
   }
 
   void _toggleFullScreen() {
@@ -99,7 +112,7 @@ class VideoScreenState extends State<VideoScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: isFullScreen ? null : AppBar(title: const Text('Video Interactivo')),
+      appBar: isFullScreen ? null : AppBar(title: const Text('Reproductor de Video')),
       body: Center(
         child: _isLoading
             ? const CircularProgressIndicator()
@@ -115,6 +128,7 @@ class VideoScreenState extends State<VideoScreen> {
                     ),
                   ),
                   videoControls(
+                    controller: _controller,
                     onRewind: () => _seekVideo(false),
                     onPlayPause: () {
                       setState(() {
@@ -127,7 +141,6 @@ class VideoScreenState extends State<VideoScreen> {
                     },
                     onForward: () => _seekVideo(true),
                     onFullScreen: _toggleFullScreen,
-                    isPlaying: _controller.value.isPlaying,
                   ),
                 ],
               ),

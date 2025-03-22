@@ -14,44 +14,24 @@ class HomeScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                "🎬 Sistemas Multimedia Audiovisuales",
+                '🎬 Sistemas Multimedia Audiovisuales',
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 10),
               const Text(
-                "📌 Definición del Proyecto",
+                '📌 Definición del Proyecto',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 5),
               const Text(
-                "Incentivar a los estudiantes de últimos semestres de la UAO a reflexionar sobre los efectos de la procrastinación y adoptar estrategias efectivas para superarla.",
+                'Incentivar a los estudiantes de últimos semestres de la UAO a reflexionar sobre los efectos de la procrastinación y adoptar estrategias efectivas para superarla.',
                 textAlign: TextAlign.justify,
               ),
               const SizedBox(height: 15),
-              const Text(
-                "🎯 Público Objetivo",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-              ),
-              const SizedBox(height: 5),
-              const Text(
-                "Estudiantes universitarios de últimos semestres que enfrentan retos en la organización del tiempo y la postergación de tareas.",
-                textAlign: TextAlign.justify,
-              ),
-              const SizedBox(height: 15),
-              const Text(
-                "📖 Narrativa Transmedia",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-              ),
-              const SizedBox(height: 5),
-              const Text(
-                "La historia gira en torno a ‘El Reloj de la Procrastinación’, un misterioso dispositivo que muestra cómo nuestras decisiones afectan el presente y el futuro.",
-                textAlign: TextAlign.justify,
-              ),
-              const SizedBox(height: 20),
               Center(
                 child: ElevatedButton(
                   onPressed: () => Navigator.pushNamed(context, '/upload'),
-                  child: const Text("Ver Video Interactivo"),
+                  child: const Text('Ver Video Interactivo'),
                 ),
               ),
             ],
