@@ -29,26 +29,32 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen> {
     _loadVideo();
   }
 
+  /// Carga el video desde el almacenamiento local o desde los assets si no está guardado.
   Future<void> _loadVideo() async {
-    if (widget.videoId != null) {
-      _localVideoPath = await StorageManager.getData(widget.videoId!);
-    }
-
-    if (_localVideoPath != null && File(_localVideoPath!).existsSync()) {
-      _initializeVideo(File(_localVideoPath!).path);
-    } else if (widget.videoUrl != null) {
-      _localVideoPath = await VideoDownloader.downloadVideo(widget.videoUrl!);
-      if (_localVideoPath != null) {
-        await StorageManager.saveData(widget.videoId!, _localVideoPath!);
-        _initializeVideo(_localVideoPath!);
-      } else {
-        _initializeVideo(widget.assetPath ?? 'assets/videos/VideoEjemplo.mp4', isAsset: true);
+    try {
+      if (widget.videoId != null) {
+        _localVideoPath = await StorageManager.getData(widget.videoId!);
       }
-    } else {
+
+      if (_localVideoPath != null && File(_localVideoPath!).existsSync()) {
+        _initializeVideo(File(_localVideoPath!).path);
+      } else {
+        _localVideoPath = await VideoDownloader.copyVideoToLocal();
+        
+        if (_localVideoPath != null) {
+          await StorageManager.saveData(widget.videoId ?? 'default_video', _localVideoPath!);
+          _initializeVideo(_localVideoPath!);
+        } else {
+          _initializeVideo(widget.assetPath ?? 'assets/videos/VideoEjemplo.mp4', isAsset: true);
+        }
+      }
+    } catch (e) {
+      debugPrint('❌ Error al cargar el video: $e');
       _initializeVideo(widget.assetPath ?? 'assets/videos/VideoEjemplo.mp4', isAsset: true);
     }
   }
 
+  /// Inicializa el video desde un archivo local o un asset.
   void _initializeVideo(String path, {bool isAsset = false}) {
     _controller = isAsset
         ? VideoPlayerController.asset(path)
@@ -63,6 +69,12 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen> {
     });
   }
 
+  /// Guarda el video localmente.
+  void _saveVideoLocally() async {
+    await VideoDownloader.copyVideoToLocal();
+  }
+
+  /// Permite adelantar o retroceder el video.
   void _seekVideo(bool forward) {
     if (!_controller.value.isInitialized) return;
 
@@ -89,6 +101,7 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen> {
     });
   }
 
+  /// Activa o desactiva el modo de pantalla completa.
   void _toggleFullScreen() {
     setState(() {
       isFullScreen = !isFullScreen;
@@ -141,6 +154,7 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen> {
                     },
                     onForward: () => _seekVideo(true),
                     onFullScreen: _toggleFullScreen,
+                    onSaveVideo: _saveVideoLocally, // ✅ Se agregó la función de guardar video
                   ),
                 ],
               ),

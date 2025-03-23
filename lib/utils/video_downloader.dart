@@ -1,18 +1,29 @@
 import 'dart:io';
-import 'package:dio/dio.dart';
+import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:flutter/foundation.dart'; // ✅ Agregar esta línea
+import 'package:flutter/foundation.dart';
 
 class VideoDownloader {
-  static Future<String?> downloadVideo(String videoUrl) async {
+  static Future<String?> copyVideoToLocal() async {
     try {
       final Directory directory = await getApplicationDocumentsDirectory();
       final String filePath = '${directory.path}/video.mp4';
 
-      await Dio().download(videoUrl, filePath);
+      // Verificar si ya existe el video
+      if (File(filePath).existsSync()) {
+        debugPrint('✅ Video ya está guardado localmente.');
+        return filePath;
+      }
+
+      // Copiar el video desde assets a almacenamiento local
+      ByteData data = await rootBundle.load('assets/videos/VideoEjemplo.mp4');
+      List<int> bytes = data.buffer.asUint8List();
+      await File(filePath).writeAsBytes(bytes);
+
+      debugPrint('✅ Video guardado localmente en $filePath');
       return filePath;
     } catch (e) {
-      debugPrint('Error descargando el video: $e'); // ✅ Ahora funcionará
+      debugPrint('❌ Error al copiar el video: $e');
       return null;
     }
   }

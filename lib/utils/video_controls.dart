@@ -12,6 +12,7 @@ Widget videoControls({
   required VoidCallback onPlayPause,
   required VoidCallback onForward,
   required VoidCallback onFullScreen,
+  required VoidCallback onSaveVideo,  // ✅ Botón de guardar video
 }) {
   return Container(
     color: controlBackgroundColor,
@@ -38,6 +39,10 @@ Widget videoControls({
         IconButton(
           icon: const Icon(Icons.fullscreen, size: iconSize, color: iconColor),
           onPressed: onFullScreen,
+        ),
+        IconButton(
+          icon: const Icon(Icons.download, size: iconSize, color: Colors.greenAccent),
+          onPressed: onSaveVideo,  // ✅ Nuevo botón para guardar video
         ),
       ],
     ),
