@@ -8,12 +8,17 @@ class SummaryScreen extends StatelessWidget {
   SummaryScreen({super.key});
 
   String _getMessage() {
-    if (controller.positiveCount >= 2) {
-      return '¡Felicidades! Tomaste buenas decisiones que ayudaron a Timeron a fortalecerse.';
-    } else if (controller.negativeCount >= 2) {
-      return 'Timeron cayó bajo la influencia de los Espíritus de la Miseria.';
-    } else {
-      return 'Timeron tuvo altibajos, pero continúa su lucha con esperanza.';
+    final lastVideo = controller.currentNode.videoName;
+
+    switch (lastVideo) {
+      case 'FinalBueno':
+        return '¡Felicidades! Tomaste buenas decisiones que ayudaron a Timeron a fortalecerse.';
+      case 'FinalMalo':
+        return 'Timeron cayó bajo la influencia de los Espíritus de la Miseria.';
+      case 'FinalNeutro':
+        return 'Timeron tuvo altibajos, pero continúa su lucha con esperanza.';
+      default:
+        return 'Gracias por participar en la historia de Timeron.';
     }
   }
 
