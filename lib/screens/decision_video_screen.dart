@@ -39,6 +39,15 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
     final requiresDecision = ['Escena3', 'Escena4', 'Escena5'].contains(currentVideo);
 
     if (_videoController.value.position >= _videoController.value.duration && !_showButtons) {
+      _videoController.removeListener(_checkEnd);
+
+      if (currentVideo == 'Escena5') {
+        setState(() {
+          _showButtons = true;
+        });
+        return;
+      }
+
       if (controller.currentNode.isFinal) {
         Future.delayed(const Duration(milliseconds: 500), () {
           if (mounted) {
@@ -54,7 +63,6 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
         });
       } else {
         controller.makeDecision(true); // paso automático
-        _videoController.removeListener(_checkEnd);
         _videoController.dispose();
         _initializeVideo();
       }

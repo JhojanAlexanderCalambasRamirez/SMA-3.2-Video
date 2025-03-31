@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/utils/decision_flow.dart';
-import 'package:flutter_application_1/screens/decision_video_screen.dart'; // ✅ Import necesario
+import 'package:flutter_application_1/screens/decision_video_screen.dart';
 
 class SummaryScreen extends StatelessWidget {
   final controller = DecisionFlowController();
@@ -41,7 +41,7 @@ class SummaryScreen extends StatelessWidget {
                 controller.reset();
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (_) => const DecisionVideoScreen()), // 
+                  MaterialPageRoute(builder: (_) => const DecisionVideoScreen()),
                 );
               },
             ),
