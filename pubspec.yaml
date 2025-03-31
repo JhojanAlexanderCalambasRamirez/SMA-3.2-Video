@@ -50,4 +50,17 @@ flutter:
   uses-material-design: true
 
   assets:
-    - C:\Users\alexa\Downloads\Universidad 2025\2025 - 01\Sistema Multimedia Audiovisuales\Corte 1\App-Vid\flutter_application_1\assets\videos\VideoEjemplo.mp4
+    - assets/videos/Escena1.mp4
+    - assets/videos/Escena2.mp4
+    - assets/videos/Escena3.mp4
+    - assets/videos/Escena3_1.mp4
+    - assets/videos/Escena3_2.mp4
+    - assets/videos/Escena4.mp4
+    - assets/videos/Escena4_1.mp4
+    - assets/videos/Escena4_2.mp4
+    - assets/videos/Escena5.mp4
+    - assets/videos/Escena5_1.mp4
+    - assets/videos/Escena5_2.mp4
+    - assets/videos/FinalBueno.mp4
+    - assets/videos/FinalMalo.mp4
+    - assets/videos/FinalNeutro.mp4

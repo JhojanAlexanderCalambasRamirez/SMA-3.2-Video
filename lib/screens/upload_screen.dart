@@ -3,7 +3,7 @@ import 'package:video_player/video_player.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_application_1/utils/video_controls.dart';
 import 'package:flutter_application_1/utils/video_downloader.dart';
-import 'dart:io';
+import 'package:flutter_application_1/screens/decision_video_screen.dart';
 
 class UploadScreen extends StatefulWidget {
   const UploadScreen({super.key});
@@ -24,38 +24,35 @@ class UploadScreenState extends State<UploadScreen> {
   }
 
   Future<void> _initializeVideo() async {
-    String? localPath = await VideoDownloader.copyVideoToLocal();
+    _controller = VideoPlayerController.asset('assets/videos/Escena1.mp4');
 
-    if (localPath != null && File(localPath).existsSync()) {
-      _controller = VideoPlayerController.file(File(localPath));
-    } else {
-      debugPrint('⚠️ No se pudo encontrar el video local. Intentando cargar desde assets.');
-      _controller = VideoPlayerController.asset('assets/videos/VideoEjemplo.mp4');
-    }
-
-    _controller.initialize().then((_) {
-      setState(() {
-        _isLoading = false;
-      });
-    }).catchError((error) {
-      debugPrint('❌ Error al cargar el video: $error');
+    await _controller.initialize();
+    setState(() {
+      _isLoading = false;
     });
+    _controller.play();
+    _controller.addListener(_checkEnd);
+  }
+
+  void _checkEnd() {
+    if (_controller.value.position >= _controller.value.duration && mounted) {
+      _controller.removeListener(_checkEnd);
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const DecisionVideoScreen()),
+      );
+    }
   }
 
   void _saveVideoLocally() async {
     await VideoDownloader.copyVideoToLocal();
   }
 
-  void _seekVideo(bool forward) {
+  void _seekVideo(bool forward) async {
     if (!_controller.value.isInitialized) return;
 
     final position = _controller.value.position;
     final duration = _controller.value.duration;
-
-    if (duration.inSeconds == 0) {
-      debugPrint('⚠️ No se puede adelantar/retroceder, duración 0.');
-      return;
-    }
 
     Duration newPosition = forward
         ? position + const Duration(seconds: 10)
@@ -64,7 +61,17 @@ class UploadScreenState extends State<UploadScreen> {
     if (newPosition < Duration.zero) newPosition = Duration.zero;
     if (newPosition > duration) newPosition = duration;
 
-    _controller.seekTo(newPosition);
+    await _controller.seekTo(newPosition);
+  }
+
+  void _togglePlayPause() {
+    setState(() {
+      if (_controller.value.isPlaying) {
+        _controller.pause();
+      } else {
+        _controller.play();
+      }
+    });
   }
 
   void _toggleFullScreen() {
@@ -91,44 +98,39 @@ class UploadScreenState extends State<UploadScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: isFullScreen ? null : AppBar(title: const Text('Ver Video')),
-      body: Center(
-        child: _isLoading
-            ? const CircularProgressIndicator()
-            : Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Flexible(
-                    child: AspectRatio(
-                      aspectRatio: isFullScreen
-                          ? MediaQuery.of(context).size.aspectRatio
-                          : _controller.value.aspectRatio,
-                      child: VideoPlayer(_controller),
-                    ),
+      body: Stack(
+        children: [
+          Center(
+            child: _isLoading
+                ? const CircularProgressIndicator()
+                : AspectRatio(
+                    aspectRatio: isFullScreen
+                        ? MediaQuery.of(context).size.aspectRatio
+                        : _controller.value.aspectRatio,
+                    child: VideoPlayer(_controller),
                   ),
-                  videoControls(
-                    controller: _controller,
-                    onRewind: () => _seekVideo(false),
-                    onPlayPause: () {
-                      setState(() {
-                        if (_controller.value.isPlaying) {
-                          _controller.pause();
-                        } else {
-                          _controller.play();
-                        }
-                      });
-                    },
-                    onForward: () => _seekVideo(true),
-                    onFullScreen: _toggleFullScreen,
-                    onSaveVideo: _saveVideoLocally, // ✅ Botón para guardar el video
-                  ),
-                ],
-              ),
+          ),
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: videoControls(
+              controller: _controller,
+              onRewind: () => _seekVideo(false),
+              onPlayPause: _togglePlayPause,
+              onForward: () => _seekVideo(true),
+              onFullScreen: _toggleFullScreen,
+              onSaveVideo: _saveVideoLocally,
+            ),
+          ),
+        ],
       ),
     );
   }
 
   @override
   void dispose() {
+    _controller.removeListener(_checkEnd);
     _controller.dispose();
     super.dispose();
   }

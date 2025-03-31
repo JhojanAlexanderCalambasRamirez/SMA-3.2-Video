@@ -45,12 +45,12 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen> {
           await StorageManager.saveData(widget.videoId ?? 'default_video', _localVideoPath!);
           _initializeVideo(_localVideoPath!);
         } else {
-          _initializeVideo(widget.assetPath ?? 'assets/videos/VideoEjemplo.mp4', isAsset: true);
+          _initializeVideo(widget.assetPath ?? 'assets/videos/Escena1.mp4', isAsset: true);
         }
       }
     } catch (e) {
       debugPrint('❌ Error al cargar el video: $e');
-      _initializeVideo(widget.assetPath ?? 'assets/videos/VideoEjemplo.mp4', isAsset: true);
+      _initializeVideo(widget.assetPath ?? 'assets/videos/Escena1.mp4', isAsset: true);
     }
   }
 
