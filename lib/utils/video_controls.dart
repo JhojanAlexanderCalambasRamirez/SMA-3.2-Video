@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:video_player/video_player.dart';
+import 'package:video_player/video_player.dart'; // ✅ NECESARIO
+
 
 const Color controlBackgroundColor = Colors.black54;
 const EdgeInsets controlPadding = EdgeInsets.symmetric(vertical: 10, horizontal: 20);
@@ -12,7 +13,8 @@ Widget videoControls({
   required VoidCallback onPlayPause,
   required VoidCallback onForward,
   required VoidCallback onFullScreen,
-  required VoidCallback onSaveVideo,  // ✅ Botón de guardar video
+  required VoidCallback onSaveVideo,
+  required bool isPlaying, // ✅ Aquí añadimos isPlaying
 }) {
   return Container(
     color: controlBackgroundColor,
@@ -26,7 +28,7 @@ Widget videoControls({
         ),
         IconButton(
           icon: Icon(
-            controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
+            isPlaying ? Icons.pause : Icons.play_arrow, // ✅ Usado aquí
             size: iconSize,
             color: iconColor,
           ),
@@ -39,10 +41,6 @@ Widget videoControls({
         IconButton(
           icon: const Icon(Icons.fullscreen, size: iconSize, color: iconColor),
           onPressed: onFullScreen,
-        ),
-        IconButton(
-          icon: const Icon(Icons.download, size: iconSize, color: Colors.greenAccent),
-          onPressed: onSaveVideo,  // ✅ Nuevo botón para guardar video
         ),
       ],
     ),

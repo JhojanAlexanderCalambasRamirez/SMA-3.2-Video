@@ -4,6 +4,7 @@ import 'package:flutter_application_1/utils/decision_flow.dart';
 import 'package:flutter_application_1/screens/summary_screen.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_application_1/utils/video_controls.dart';
+import 'package:flutter_application_1/utils/progress_bar.dart';
 
 class DecisionVideoScreen extends StatefulWidget {
   const DecisionVideoScreen({super.key});
@@ -62,9 +63,13 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
           _showButtons = true;
         });
       } else {
-        controller.makeDecision(true); // paso automático
-        _videoController.dispose();
-        _initializeVideo();
+        // Avanza automáticamente sin afectar el conteo de decisiones
+        final nextNode = controller.currentNode.positiveDecision;
+        if (nextNode != null) {
+          controller.setCurrentNode(nextNode);
+          _videoController.dispose();
+          _initializeVideo();
+        }
       }
     }
   }
@@ -126,7 +131,7 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
   }
 
   void _saveVideoLocally() async {
-    // Implementa si se requiere guardar el video localmente
+    // Aquí puedes agregar la lógica para guardar el video si es necesario
   }
 
   @override
@@ -149,6 +154,10 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
                   )
                 : const CircularProgressIndicator(),
           ),
+          narrativeProgressBar(
+            positiveCount: controller.positiveCount,
+            negativeCount: controller.negativeCount,
+          ),
           Positioned(
             bottom: 0,
             left: 0,
@@ -160,6 +169,7 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
               onForward: () => _seekVideo(true),
               onFullScreen: _toggleFullScreen,
               onSaveVideo: _saveVideoLocally,
+              isPlaying: _videoController.value.isPlaying,
             ),
           ),
           if (_showButtons)
@@ -174,13 +184,17 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
                       icon: const Icon(Icons.thumb_up),
                       label: const Text('Lo ayuda'),
                       onPressed: () => _makeDecision(true),
-                      style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                      ),
                     ),
                     ElevatedButton.icon(
                       icon: const Icon(Icons.thumb_down),
                       label: const Text('No lo ayuda'),
                       onPressed: () => _makeDecision(false),
-                      style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                      ),
                     ),
                   ],
                 ),

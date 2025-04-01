@@ -154,7 +154,8 @@ class VideoPlayerScreenState extends State<VideoPlayerScreen> {
                     },
                     onForward: () => _seekVideo(true),
                     onFullScreen: _toggleFullScreen,
-                    onSaveVideo: _saveVideoLocally, // ✅ Se agregó la función de guardar video
+                    onSaveVideo: _saveVideoLocally,
+                    isPlaying: _controller.value.isPlaying, // ✅ Se agregó la función de guardar video
                   ),
                 ],
               ),

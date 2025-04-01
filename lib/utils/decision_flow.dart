@@ -122,6 +122,10 @@ class DecisionFlowController {
   int get positiveCount => _positiveCount;
   int get negativeCount => _negativeCount;
 
+  void setCurrentNode(DecisionNode node) {
+    _currentNode = node;
+  }
+
   void makeDecision(bool isPositive) {
     if (_currentNode.isFinal) return;
 

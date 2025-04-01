@@ -4,6 +4,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_application_1/utils/video_controls.dart';
 import 'package:flutter_application_1/utils/video_downloader.dart';
 import 'package:flutter_application_1/screens/decision_video_screen.dart';
+import 'package:flutter_application_1/utils/progress_bar.dart';
+import 'package:flutter_application_1/utils/decision_flow.dart';
 
 class UploadScreen extends StatefulWidget {
   const UploadScreen({super.key});
@@ -81,16 +83,12 @@ class UploadScreenState extends State<UploadScreen> {
 
     if (isFullScreen) {
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-      SystemChrome.setPreferredOrientations([
-        DeviceOrientation.landscapeLeft,
-        DeviceOrientation.landscapeRight
-      ]);
+      SystemChrome.setPreferredOrientations(
+          [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
     } else {
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-      SystemChrome.setPreferredOrientations([
-        DeviceOrientation.portraitUp,
-        DeviceOrientation.portraitDown
-      ]);
+      SystemChrome.setPreferredOrientations(
+          [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
     }
   }
 
@@ -110,6 +108,10 @@ class UploadScreenState extends State<UploadScreen> {
                     child: VideoPlayer(_controller),
                   ),
           ),
+          narrativeProgressBar(
+            positiveCount: DecisionFlowController().positiveCount,
+            negativeCount: DecisionFlowController().negativeCount,
+          ),
           Positioned(
             bottom: 0,
             left: 0,
@@ -121,6 +123,7 @@ class UploadScreenState extends State<UploadScreen> {
               onForward: () => _seekVideo(true),
               onFullScreen: _toggleFullScreen,
               onSaveVideo: _saveVideoLocally,
+              isPlaying: _controller.value.isPlaying,
             ),
           ),
         ],
