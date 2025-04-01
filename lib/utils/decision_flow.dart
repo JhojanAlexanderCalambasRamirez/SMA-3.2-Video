@@ -28,19 +28,18 @@ class DecisionFlowController {
     // Finales
     final finalBueno = DecisionNode(videoName: 'FinalBueno');
     final finalMalo = DecisionNode(videoName: 'FinalMalo');
-    final finalNeutro = DecisionNode(videoName: 'FinalNeutro');
 
     // Escena 5.1 y 5.2 conectan al final evaluado dinámicamente
     final escena5_1 = DecisionNode(
       videoName: 'Escena5_1',
-      positiveDecision: null,
-      negativeDecision: null,
+      positiveDecision: finalMalo,  // El final malo es la elección negativa
+      negativeDecision: finalMalo,  // El final malo es la elección negativa
     );
 
     final escena5_2 = DecisionNode(
       videoName: 'Escena5_2',
-      positiveDecision: null,
-      negativeDecision: null,
+      positiveDecision: finalBueno,  // El final bueno es la elección positiva
+      negativeDecision: finalBueno,  // El final bueno es la elección positiva
     );
 
     // Escena 5 (antes de la última decisión)
@@ -103,19 +102,18 @@ class DecisionFlowController {
     );
 
     _currentNode = _startNode;
-
-    // Asignamos los finales dinámicos luego para evitar referencias circulares
-    escena5_1.positiveDecision = _evaluateFinal(finalBueno, finalMalo, finalNeutro);
-    escena5_1.negativeDecision = escena5_1.positiveDecision;
-
-    escena5_2.positiveDecision = _evaluateFinal(finalBueno, finalMalo, finalNeutro);
-    escena5_2.negativeDecision = escena5_2.positiveDecision;
   }
 
-  DecisionNode _evaluateFinal(DecisionNode bueno, DecisionNode malo, DecisionNode neutro) {
-    if (_positiveCount >= 2) return bueno;
-    if (_negativeCount >= 2) return malo;
-    return neutro;
+  // Evaluar el final según la cantidad de decisiones
+  DecisionNode getFinal() {
+    // La evaluación final es determinada directamente desde las decisiones
+    if (_positiveCount == 3) {
+      return DecisionNode(videoName: 'FinalBueno');
+    }
+    if (_negativeCount == 3) {
+      return DecisionNode(videoName: 'FinalMalo');
+    }
+    return DecisionNode(videoName: 'FinalNeutro');
   }
 
   DecisionNode get currentNode => _currentNode;

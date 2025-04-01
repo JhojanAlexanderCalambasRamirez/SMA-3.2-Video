@@ -91,16 +91,10 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
 
     if (_isFullScreen) {
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-      SystemChrome.setPreferredOrientations([
-        DeviceOrientation.landscapeLeft,
-        DeviceOrientation.landscapeRight,
-      ]);
+      SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
     } else {
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-      SystemChrome.setPreferredOrientations([
-        DeviceOrientation.portraitUp,
-        DeviceOrientation.portraitDown,
-      ]);
+      SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
     }
   }
 
@@ -184,17 +178,13 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
                       icon: const Icon(Icons.thumb_up),
                       label: const Text('Lo ayuda'),
                       onPressed: () => _makeDecision(true),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
-                      ),
+                      style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
                     ),
                     ElevatedButton.icon(
                       icon: const Icon(Icons.thumb_down),
                       label: const Text('No lo ayuda'),
                       onPressed: () => _makeDecision(false),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
-                      ),
+                      style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
                     ),
                   ],
                 ),
