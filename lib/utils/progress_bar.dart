@@ -4,13 +4,12 @@ Widget narrativeProgressBar({
   required int positiveCount,
   required int negativeCount,
 }) {
-  // Solo consideramos decisiones tomadas en Escena3, Escena4 y Escena5
-  int relevantTotal = (positiveCount + negativeCount).clamp(0, 3);
-  double progress = relevantTotal == 0 ? 0.0 : (positiveCount.clamp(0, 3) / 3);
+  int totalDecisions = (positiveCount + negativeCount).clamp(0, 3);
+  double progress = totalDecisions / 3;
 
   Color color;
   if (positiveCount >= 3) {
-    color = Colors.yellow;
+    color = Colors.green;
   } else if (negativeCount >= 3) {
     color = Colors.red;
   } else {
@@ -24,7 +23,7 @@ Widget narrativeProgressBar({
     child: ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: LinearProgressIndicator(
-        value: progress.clamp(0.0, 1.0),
+        value: progress,
         minHeight: 10,
         backgroundColor: Colors.grey.shade800,
         valueColor: AlwaysStoppedAnimation<Color>(color),

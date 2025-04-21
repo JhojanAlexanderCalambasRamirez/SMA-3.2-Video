@@ -9,22 +9,35 @@ class SummaryScreen extends StatelessWidget {
 
   String _getMessage() {
     final lastVideo = controller.currentNode.videoName;
+    debugPrint('Último video reproducido: $lastVideo');
 
+    String message;
     switch (lastVideo) {
       case 'FinalBueno':
-        return '¡Felicidades! Tomaste buenas decisiones que ayudaron a Timeron a fortalecerse.';
+        message = '¡Felicidades! Tomaste buenas decisiones que ayudaron a Timeron a fortalecerse.';
+        debugPrint('Mensaje generado: $message');
+        break;
       case 'FinalMalo':
-        return 'Timeron cayó bajo la influencia de los Espíritus de la Miseria.';
+        message = 'Timeron cayó bajo la influencia de los Espíritus de la Miseria.';
+        debugPrint('Mensaje generado: $message');
+        break;
       case 'FinalNeutro':
-        return 'Timeron tuvo altibajos, pero continúa su lucha con esperanza.';
+        message = 'Timeron tuvo altibajos, pero continúa su lucha con esperanza.';
+        debugPrint('Mensaje generado: $message');
+        break;
       default:
-        return 'Gracias por participar en la historia de Timeron.';
+        message = 'Gracias por participar en la historia de Timeron.';
+        debugPrint('Mensaje generado: $message');
+        break;
     }
+
+    return message;
   }
 
   @override
   Widget build(BuildContext context) {
     final message = _getMessage();
+    debugPrint('Generando la pantalla de resumen con el mensaje: $message');
 
     return Scaffold(
       appBar: AppBar(title: const Text('Resumen Final')),
@@ -43,6 +56,7 @@ class SummaryScreen extends StatelessWidget {
               icon: const Icon(Icons.replay),
               label: const Text('Reiniciar Historia'),
               onPressed: () {
+                debugPrint('Reiniciando la historia...');
                 controller.reset();
                 Navigator.pushReplacement(
                   context,

@@ -26,18 +26,21 @@ class UploadScreenState extends State<UploadScreen> {
   }
 
   Future<void> _initializeVideo() async {
+    debugPrint('Inicializando el video...');
     _controller = VideoPlayerController.asset('assets/videos/Escena1.mp4');
 
     await _controller.initialize();
     setState(() {
       _isLoading = false;
     });
+    debugPrint('Video inicializado, comenzando a reproducir...');
     _controller.play();
     _controller.addListener(_checkEnd);
   }
 
   void _checkEnd() {
     if (_controller.value.position >= _controller.value.duration && mounted) {
+      debugPrint('El video ha finalizado, navegando al siguiente...');
       _controller.removeListener(_checkEnd);
       Navigator.pushReplacement(
         context,
@@ -47,7 +50,9 @@ class UploadScreenState extends State<UploadScreen> {
   }
 
   void _saveVideoLocally() async {
+    debugPrint('Guardando video localmente...');
     await VideoDownloader.copyVideoToLocal();
+    debugPrint('Video guardado localmente.');
   }
 
   void _seekVideo(bool forward) async {
@@ -63,14 +68,17 @@ class UploadScreenState extends State<UploadScreen> {
     if (newPosition < Duration.zero) newPosition = Duration.zero;
     if (newPosition > duration) newPosition = duration;
 
+    debugPrint('Buscando video a la posición: $newPosition');
     await _controller.seekTo(newPosition);
   }
 
   void _togglePlayPause() {
     setState(() {
       if (_controller.value.isPlaying) {
+        debugPrint('Pausando el video...');
         _controller.pause();
       } else {
+        debugPrint('Reproduciendo el video...');
         _controller.play();
       }
     });
@@ -79,6 +87,7 @@ class UploadScreenState extends State<UploadScreen> {
   void _toggleFullScreen() {
     setState(() {
       isFullScreen = !isFullScreen;
+      debugPrint('Modo pantalla completa: $isFullScreen');
     });
 
     if (isFullScreen) {
@@ -118,11 +127,26 @@ class UploadScreenState extends State<UploadScreen> {
             right: 0,
             child: videoControls(
               controller: _controller,
-              onRewind: () => _seekVideo(false),
-              onPlayPause: _togglePlayPause,
-              onForward: () => _seekVideo(true),
-              onFullScreen: _toggleFullScreen,
-              onSaveVideo: _saveVideoLocally,
+              onRewind: () {
+                debugPrint('Retrocediendo el video...');
+                _seekVideo(false);
+              },
+              onPlayPause: () {
+                debugPrint('Reproducir/Pausar botón presionado');
+                _togglePlayPause();
+              },
+              onForward: () {
+                debugPrint('Avanzando el video...');
+                _seekVideo(true);
+              },
+              onFullScreen: () {
+                debugPrint('Pantalla completa activada/desactivada');
+                _toggleFullScreen();
+              },
+              onSaveVideo: () {
+                debugPrint('Guardando video localmente...');
+                _saveVideoLocally();
+              },
               isPlaying: _controller.value.isPlaying,
             ),
           ),
@@ -133,6 +157,7 @@ class UploadScreenState extends State<UploadScreen> {
 
   @override
   void dispose() {
+    debugPrint('Destruyendo el controlador de video...');
     _controller.removeListener(_checkEnd);
     _controller.dispose();
     super.dispose();

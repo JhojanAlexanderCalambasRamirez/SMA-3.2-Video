@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart'; // Para usar debugPrint
+
 class DecisionNode {
   final String videoName;
   DecisionNode? positiveDecision;
@@ -25,9 +27,13 @@ class DecisionFlowController {
   int _negativeCount = 0;
 
   void _initializeFlow() {
+    debugPrint('Inicializando el flujo de decisiones...');
+    
     // Finales
     final finalBueno = DecisionNode(videoName: 'FinalBueno');
     final finalMalo = DecisionNode(videoName: 'FinalMalo');
+    
+    debugPrint('Finales inicializados: FinalBueno, FinalMalo, FinalNeutro');
 
     // Escena 5.1 y 5.2 conectan al final evaluado dinámicamente
     final escena5_1 = DecisionNode(
@@ -106,13 +112,20 @@ class DecisionFlowController {
 
   // Evaluar el final según la cantidad de decisiones
   DecisionNode getFinal() {
-    // La evaluación final es determinada directamente desde las decisiones
+    debugPrint('Evaluando el final...');
+
+    // Aquí es donde ahora tenemos que usar finalNeutro si se cumplen ciertas condiciones
     if (_positiveCount == 3) {
+      debugPrint('Final positivo alcanzado: FinalBueno');
       return DecisionNode(videoName: 'FinalBueno');
     }
     if (_negativeCount == 3) {
+      debugPrint('Final negativo alcanzado: FinalMalo');
       return DecisionNode(videoName: 'FinalMalo');
     }
+
+    // Si no se cumple ninguna de las condiciones anteriores, es el final neutro
+    debugPrint('Final neutro alcanzado: FinalNeutro');
     return DecisionNode(videoName: 'FinalNeutro');
   }
 
@@ -122,21 +135,26 @@ class DecisionFlowController {
 
   void setCurrentNode(DecisionNode node) {
     _currentNode = node;
+    debugPrint('Nodo actual actualizado a: ${node.videoName}');
   }
 
   void makeDecision(bool isPositive) {
+    debugPrint('Haciendo decisión: ${isPositive ? "Positiva" : "Negativa"}');
     if (_currentNode.isFinal) return;
 
     if (isPositive) {
       _positiveCount++;
+      debugPrint('Decisión positiva tomada. Contador positivo: $_positiveCount');
       _currentNode = _currentNode.positiveDecision!;
     } else {
       _negativeCount++;
+      debugPrint('Decisión negativa tomada. Contador negativo: $_negativeCount');
       _currentNode = _currentNode.negativeDecision!;
     }
   }
 
   void reset() {
+    debugPrint('Reiniciando flujo...');
     _positiveCount = 0;
     _negativeCount = 0;
     _initializeFlow();

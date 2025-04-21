@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
-import 'package:flutter_application_1/utils/decision_flow.dart';
-import 'package:flutter_application_1/screens/summary_screen.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_application_1/utils/video_controls.dart';
+import 'package:flutter_application_1/utils/decision_flow.dart';
 import 'package:flutter_application_1/utils/progress_bar.dart';
+import 'package:flutter_application_1/screens/summary_screen.dart';
+import 'package:flutter_application_1/screens/pause_screen.dart';
 
 class DecisionVideoScreen extends StatefulWidget {
   const DecisionVideoScreen({super.key});
@@ -18,6 +18,7 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
   late VideoPlayerController _videoController;
   bool _showButtons = false;
   bool _isFullScreen = false;
+  bool _isPaused = false;
 
   @override
   void initState() {
@@ -27,10 +28,12 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
 
   void _initializeVideo() {
     final videoName = controller.currentNode.videoName;
+    debugPrint('Inicializando video: $videoName');
     _videoController = VideoPlayerController.asset('assets/videos/$videoName.mp4')
       ..initialize().then((_) {
         setState(() {});
         _videoController.play();
+        debugPrint('Reproduciendo video: $videoName');
         _videoController.addListener(_checkEnd);
       });
   }
@@ -63,7 +66,6 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
           _showButtons = true;
         });
       } else {
-        // Avanza automáticamente sin afectar el conteo de decisiones
         final nextNode = controller.currentNode.positiveDecision;
         if (nextNode != null) {
           controller.setCurrentNode(nextNode);
@@ -125,13 +127,64 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
   }
 
   void _saveVideoLocally() async {
-    // Aquí puedes agregar la lógica para guardar el video si es necesario
+    // Implementar lógica para guardar el video localmente si es necesario.
+  }
+
+  void _pause() {
+    setState(() {
+      _isPaused = true;
+    });
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const PauseScreen()),
+    );
   }
 
   @override
   void dispose() {
     _videoController.dispose();
     super.dispose();
+  }
+
+  // Video Controls UI
+  Widget videoControls({
+    required VideoPlayerController controller,
+    required VoidCallback onRewind,
+    required VoidCallback onPlayPause,
+    required VoidCallback onForward,
+    required VoidCallback onFullScreen,
+    required VoidCallback onSaveVideo,
+    required bool isPlaying,
+  }) {
+    return Container(
+      color: Colors.black54,
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          IconButton(
+            icon: const Icon(Icons.replay_10, size: 40, color: Colors.white),
+            onPressed: onRewind,
+          ),
+          IconButton(
+            icon: Icon(
+              isPlaying ? Icons.pause : Icons.play_arrow,
+              size: 40,
+              color: Colors.white,
+            ),
+            onPressed: onPlayPause,
+          ),
+          IconButton(
+            icon: const Icon(Icons.forward_10, size: 40, color: Colors.white),
+            onPressed: onForward,
+          ),
+          IconButton(
+            icon: const Icon(Icons.fullscreen, size: 40, color: Colors.white),
+            onPressed: onFullScreen,
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -151,6 +204,14 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
           narrativeProgressBar(
             positiveCount: controller.positiveCount,
             negativeCount: controller.negativeCount,
+          ),
+          Positioned(
+            top: 0,
+            right: 0,
+            child: IconButton(
+              icon: const Icon(Icons.close),
+              onPressed: _pause,
+            ),
           ),
           Positioned(
             bottom: 0,
@@ -176,13 +237,13 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
                   children: [
                     ElevatedButton.icon(
                       icon: const Icon(Icons.thumb_up),
-                      label: const Text('Lo ayuda'),
+                      label: const Text('Arrebatarle el teléfono y mostrarle la realidad.'),
                       onPressed: () => _makeDecision(true),
                       style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
                     ),
                     ElevatedButton.icon(
                       icon: const Icon(Icons.thumb_down),
-                      label: const Text('No lo ayuda'),
+                      label: const Text('Dejarlo, quizás no es tan grave.'),
                       onPressed: () => _makeDecision(false),
                       style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
                     ),

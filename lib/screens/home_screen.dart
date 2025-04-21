@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -6,36 +7,36 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Inicio')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                '🎬 Sistemas Multimedia Audiovisuales',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 10),
-              const Text(
-                '📌 Definición del Proyecto',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-              ),
-              const SizedBox(height: 5),
-              const Text(
-                'Incentivar a los estudiantes de últimos semestres de la UAO a reflexionar sobre los efectos de la procrastinación y adoptar estrategias efectivas para superarla.',
-                textAlign: TextAlign.justify,
-              ),
-              const SizedBox(height: 15),
-              Center(
-                child: ElevatedButton(
-                  onPressed: () => Navigator.pushNamed(context, '/upload'),
-                  child: const Text('Ver Video Interactivo'),
-                ),
-              ),
-            ],
-          ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset('assets/Logo/logo.png'), // Cambia con la ruta de tu logo
+            const SizedBox(height: 20),
+            const Text(
+              'CLOCK SPIRIT',
+              style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              'Lucha contra los Espíritus de la Miseria para salvar a sus amigos y tomar decisiones que impactarán sus destinos.',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.normal),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 40),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/upload'); // Navega a la pantalla de carga de video
+              },
+              child: const Text('Iniciar'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                SystemNavigator.pop(); // Cierra la aplicación
+              },
+              child: const Text('Salir'),
+            ),
+          ],
         ),
       ),
     );
