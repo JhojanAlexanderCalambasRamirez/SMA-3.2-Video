@@ -40,6 +40,8 @@ dependencies:
   # Soporte para permisos en Android/iOS
   permission_handler: ^11.3.0
 
+  flutter_svg: ^2.0.7
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -64,3 +66,15 @@ flutter:
     - assets/videos/FinalBueno.mp4
     - assets/videos/FinalMalo.mp4
     - assets/videos/FinalNeutro.mp4
+    - assets/FeedBack/
+    - assets/FeedBack/exito.png
+    - assets/FeedBack/fracaso.png
+    - assets/Botones/
+    - assets/Botones/left.svg
+    - assets/Botones/right.svg
+    - assets/Botones/left.png
+    - assets/Botones/right.png
+    - assets/Botones/Exit.svg
+    - assets/Logo/Logo.png
+    - assets/Logo/LogoAppIntro.svg
+    - assets/Logo/LogoInicioApp.svg

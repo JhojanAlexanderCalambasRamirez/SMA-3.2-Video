@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart'; // Para usar debugPrint
+import 'package:flutter/foundation.dart';
 
 class DecisionNode {
   final String videoName;
@@ -28,34 +28,29 @@ class DecisionFlowController {
 
   void _initializeFlow() {
     debugPrint('Inicializando el flujo de decisiones...');
-    
-    // Finales
+
     final finalBueno = DecisionNode(videoName: 'FinalBueno');
     final finalMalo = DecisionNode(videoName: 'FinalMalo');
-    
-    debugPrint('Finales inicializados: FinalBueno, FinalMalo, FinalNeutro');
+    final finalNeutro = DecisionNode(videoName: 'FinalNeutro');
 
-    // Escena 5.1 y 5.2 conectan al final evaluado dinámicamente
     final escena5_1 = DecisionNode(
       videoName: 'Escena5_1',
-      positiveDecision: finalMalo,  // El final malo es la elección negativa
-      negativeDecision: finalMalo,  // El final malo es la elección negativa
+      positiveDecision: finalMalo,
+      negativeDecision: finalMalo,
     );
 
     final escena5_2 = DecisionNode(
       videoName: 'Escena5_2',
-      positiveDecision: finalBueno,  // El final bueno es la elección positiva
-      negativeDecision: finalBueno,  // El final bueno es la elección positiva
+      positiveDecision: finalBueno,
+      negativeDecision: finalBueno,
     );
 
-    // Escena 5 (antes de la última decisión)
     final escena5 = DecisionNode(
       videoName: 'Escena5',
       positiveDecision: escena5_2,
       negativeDecision: escena5_1,
     );
 
-    // Escena 4
     final escena4_1 = DecisionNode(
       videoName: 'Escena4_1',
       positiveDecision: escena5,
@@ -74,7 +69,6 @@ class DecisionFlowController {
       negativeDecision: escena4_1,
     );
 
-    // Escena 3
     final escena3_1 = DecisionNode(
       videoName: 'Escena3_1',
       positiveDecision: escena4,
@@ -93,14 +87,12 @@ class DecisionFlowController {
       negativeDecision: escena3_1,
     );
 
-    // Escena 2
     final escena2 = DecisionNode(
       videoName: 'Escena2',
       positiveDecision: escena3,
       negativeDecision: escena3,
     );
 
-    // Escena 1
     _startNode = DecisionNode(
       videoName: 'Escena1',
       positiveDecision: escena2,
@@ -110,11 +102,8 @@ class DecisionFlowController {
     _currentNode = _startNode;
   }
 
-  // Evaluar el final según la cantidad de decisiones
   DecisionNode getFinal() {
     debugPrint('Evaluando el final...');
-
-    // Aquí es donde ahora tenemos que usar finalNeutro si se cumplen ciertas condiciones
     if (_positiveCount == 3) {
       debugPrint('Final positivo alcanzado: FinalBueno');
       return DecisionNode(videoName: 'FinalBueno');
@@ -123,8 +112,6 @@ class DecisionFlowController {
       debugPrint('Final negativo alcanzado: FinalMalo');
       return DecisionNode(videoName: 'FinalMalo');
     }
-
-    // Si no se cumple ninguna de las condiciones anteriores, es el final neutro
     debugPrint('Final neutro alcanzado: FinalNeutro');
     return DecisionNode(videoName: 'FinalNeutro');
   }

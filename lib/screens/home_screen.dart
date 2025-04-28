@@ -11,7 +11,7 @@ class HomeScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset('assets/Logo/logo.png'), // Cambia con la ruta de tu logo
+            Image.asset('assets/Logo/Logo.png'), // Cambia con la ruta de tu logo
             const SizedBox(height: 20),
             const Text(
               'CLOCK SPIRIT',

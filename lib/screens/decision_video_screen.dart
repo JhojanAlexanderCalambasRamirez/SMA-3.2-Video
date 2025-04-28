@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_application_1/utils/decision_flow.dart';
 import 'package:flutter_application_1/utils/progress_bar.dart';
 import 'package:flutter_application_1/screens/summary_screen.dart';
@@ -17,8 +18,9 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
   final controller = DecisionFlowController();
   late VideoPlayerController _videoController;
   bool _showButtons = false;
+  bool _showFeedback = false;
   bool _isFullScreen = false;
-  bool _isPaused = false;
+  String _feedbackImage = '';
 
   @override
   void initState() {
@@ -28,42 +30,42 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
 
   void _initializeVideo() {
     final videoName = controller.currentNode.videoName;
-    debugPrint('Inicializando video: $videoName');
     _videoController = VideoPlayerController.asset('assets/videos/$videoName.mp4')
       ..initialize().then((_) {
         setState(() {});
         _videoController.play();
-        debugPrint('Reproduciendo video: $videoName');
         _videoController.addListener(_checkEnd);
       });
   }
 
   void _checkEnd() {
     final currentVideo = controller.currentNode.videoName;
-    final requiresDecision = ['Escena3', 'Escena4', 'Escena5'].contains(currentVideo);
+    final isDecisionVideo = ['Escena3', 'Escena4', 'Escena5'].contains(currentVideo);
+    final isPathAfterDecision = [
+      'Escena3_1', 'Escena3_2',
+      'Escena4_1', 'Escena4_2',
+      'Escena5_1', 'Escena5_2'
+    ].contains(currentVideo);
 
-    if (_videoController.value.position >= _videoController.value.duration && !_showButtons) {
+    if (_videoController.value.position >= _videoController.value.duration && !_showButtons && !_showFeedback) {
       _videoController.removeListener(_checkEnd);
-
-      if (currentVideo == 'Escena5') {
-        setState(() {
-          _showButtons = true;
-        });
-        return;
-      }
 
       if (controller.currentNode.isFinal) {
         Future.delayed(const Duration(milliseconds: 500), () {
           if (mounted) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (_) => SummaryScreen()),
-            );
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => SummaryScreen()));
           }
         });
-      } else if (requiresDecision) {
+      } else if (isDecisionVideo) {
         setState(() {
           _showButtons = true;
+        });
+      } else if (isPathAfterDecision) {
+        setState(() {
+          _showFeedback = true;
+          _feedbackImage = currentVideo.endsWith('_2')
+              ? 'assets/FeedBack/exito.png'
+              : 'assets/FeedBack/fracaso.png';
         });
       } else {
         final nextNode = controller.currentNode.positiveDecision;
@@ -86,26 +88,22 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
     _initializeVideo();
   }
 
-  void _toggleFullScreen() {
+  void _continueAfterFeedback() {
     setState(() {
-      _isFullScreen = !_isFullScreen;
+      _showFeedback = false;
     });
-
-    if (_isFullScreen) {
-      SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-      SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
-    } else {
-      SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-      SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+    final nextNode = controller.currentNode.positiveDecision;
+    if (nextNode != null) {
+      controller.setCurrentNode(nextNode);
+      _videoController.dispose();
+      _initializeVideo();
     }
   }
 
   void _seekVideo(bool forward) async {
     if (!_videoController.value.isInitialized) return;
-
     final position = _videoController.value.position;
     final duration = _videoController.value.duration;
-
     Duration newPosition = forward
         ? position + const Duration(seconds: 10)
         : position - const Duration(seconds: 10);
@@ -118,44 +116,38 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
 
   void _togglePlayPause() {
     setState(() {
-      if (_videoController.value.isPlaying) {
-        _videoController.pause();
-      } else {
-        _videoController.play();
-      }
+      _videoController.value.isPlaying
+          ? _videoController.pause()
+          : _videoController.play();
     });
   }
 
-  void _saveVideoLocally() async {
-    // Implementar lógica para guardar el video localmente si es necesario.
-  }
-
-  void _pause() {
+  void _toggleFullScreen() {
     setState(() {
-      _isPaused = true;
+      _isFullScreen = !_isFullScreen;
     });
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const PauseScreen()),
-    );
+
+    if (_isFullScreen) {
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+      SystemChrome.setPreferredOrientations([
+        DeviceOrientation.landscapeLeft,
+        DeviceOrientation.landscapeRight,
+      ]);
+    } else {
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+      SystemChrome.setPreferredOrientations([
+        DeviceOrientation.portraitUp,
+        DeviceOrientation.portraitDown,
+      ]);
+    }
   }
 
-  @override
-  void dispose() {
-    _videoController.dispose();
-    super.dispose();
+  void _openPauseMenu() {
+    _videoController.pause();
+    Navigator.push(context, MaterialPageRoute(builder: (_) => const PauseScreen()));
   }
 
-  // Video Controls UI
-  Widget videoControls({
-    required VideoPlayerController controller,
-    required VoidCallback onRewind,
-    required VoidCallback onPlayPause,
-    required VoidCallback onForward,
-    required VoidCallback onFullScreen,
-    required VoidCallback onSaveVideo,
-    required bool isPlaying,
-  }) {
+  Widget _buildVideoControls() {
     return Container(
       color: Colors.black54,
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
@@ -163,28 +155,35 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           IconButton(
-            icon: const Icon(Icons.replay_10, size: 40, color: Colors.white),
-            onPressed: onRewind,
+            icon: SvgPicture.asset('assets/Botones/left.svg', width: 41, height: 44),
+            onPressed: () => _seekVideo(false),
           ),
           IconButton(
             icon: Icon(
-              isPlaying ? Icons.pause : Icons.play_arrow,
-              size: 40,
+              _videoController.value.isPlaying ? Icons.pause : Icons.play_arrow,
               color: Colors.white,
+              size: 35,
             ),
-            onPressed: onPlayPause,
+            onPressed: _togglePlayPause,
           ),
           IconButton(
-            icon: const Icon(Icons.forward_10, size: 40, color: Colors.white),
-            onPressed: onForward,
+            icon: SvgPicture.asset('assets/Botones/right.svg', width: 41, height: 44),
+            onPressed: () => _seekVideo(true),
           ),
           IconButton(
-            icon: const Icon(Icons.fullscreen, size: 40, color: Colors.white),
-            onPressed: onFullScreen,
+            icon: const Icon(Icons.fullscreen, color: Colors.white, size: 35),
+            onPressed: _toggleFullScreen,
           ),
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _videoController.removeListener(_checkEnd);
+    _videoController.dispose();
+    super.dispose();
   }
 
   @override
@@ -206,28 +205,21 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
             negativeCount: controller.negativeCount,
           ),
           Positioned(
-            top: 0,
-            right: 0,
+            top: 20,
+            right: 20,
             child: IconButton(
-              icon: const Icon(Icons.close),
-              onPressed: _pause,
+              icon: const Icon(Icons.close, color: Colors.white, size: 30),
+              onPressed: _openPauseMenu,
             ),
           ),
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: videoControls(
-              controller: _videoController,
-              onRewind: () => _seekVideo(false),
-              onPlayPause: _togglePlayPause,
-              onForward: () => _seekVideo(true),
-              onFullScreen: _toggleFullScreen,
-              onSaveVideo: _saveVideoLocally,
-              isPlaying: _videoController.value.isPlaying,
+          if (!_showFeedback)
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: _buildVideoControls(),
             ),
-          ),
-          if (_showButtons)
+          if (_showButtons && !_showFeedback)
             Align(
               alignment: Alignment.bottomCenter,
               child: Padding(
@@ -235,20 +227,43 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    ElevatedButton.icon(
-                      icon: const Icon(Icons.thumb_up),
-                      label: const Text('Arrebatarle el teléfono y mostrarle la realidad.'),
+                    ElevatedButton(
                       onPressed: () => _makeDecision(true),
                       style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+                      child: const Text('Arrebatarle el teléfono y mostrarle la realidad.'),
                     ),
-                    ElevatedButton.icon(
-                      icon: const Icon(Icons.thumb_down),
-                      label: const Text('Dejarlo, quizás no es tan grave.'),
+                    ElevatedButton(
                       onPressed: () => _makeDecision(false),
                       style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                      child: const Text('Dejarlo, quizás no es tan grave.'),
                     ),
                   ],
                 ),
+              ),
+            ),
+          if (_showFeedback)
+            Positioned.fill(
+              child: Stack(
+                children: [
+                  Image.asset(
+                    _feedbackImage,
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                    height: double.infinity,
+                  ),
+                  Center(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white70,
+                        foregroundColor: Colors.black,
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                      ),
+                      onPressed: _continueAfterFeedback,
+                      child: const Text('Continuar'),
+                    ),
+                  ),
+                ],
               ),
             ),
         ],
