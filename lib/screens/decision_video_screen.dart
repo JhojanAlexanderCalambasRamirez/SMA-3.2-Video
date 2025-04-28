@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_application_1/utils/decision_flow.dart';
 import 'package:flutter_application_1/utils/progress_bar.dart';
+import 'package:flutter_application_1/utils/video_controls.dart'; // 👈 Importa el mismo control bonito que ya tienes
 import 'package:flutter_application_1/screens/summary_screen.dart';
 import 'package:flutter_application_1/screens/pause_screen.dart';
 
@@ -21,6 +21,7 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
   bool _showFeedback = false;
   bool _isFullScreen = false;
   String _feedbackImage = '';
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -32,7 +33,9 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
     final videoName = controller.currentNode.videoName;
     _videoController = VideoPlayerController.asset('assets/videos/$videoName.mp4')
       ..initialize().then((_) {
-        setState(() {});
+        setState(() {
+          _isLoading = false;
+        });
         _videoController.play();
         _videoController.addListener(_checkEnd);
       });
@@ -100,7 +103,7 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
     }
   }
 
-  void _seekVideo(bool forward) async {
+  void _seekVideo(bool forward) {
     if (!_videoController.value.isInitialized) return;
     final position = _videoController.value.position;
     final duration = _videoController.value.duration;
@@ -111,7 +114,7 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
     if (newPosition < Duration.zero) newPosition = Duration.zero;
     if (newPosition > duration) newPosition = duration;
 
-    await _videoController.seekTo(newPosition);
+    _videoController.seekTo(newPosition);
   }
 
   void _togglePlayPause() {
@@ -147,38 +150,6 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
     Navigator.push(context, MaterialPageRoute(builder: (_) => const PauseScreen()));
   }
 
-  Widget _buildVideoControls() {
-    return Container(
-      color: Colors.black54,
-      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          IconButton(
-            icon: SvgPicture.asset('assets/Botones/left.svg', width: 41, height: 44),
-            onPressed: () => _seekVideo(false),
-          ),
-          IconButton(
-            icon: Icon(
-              _videoController.value.isPlaying ? Icons.pause : Icons.play_arrow,
-              color: Colors.white,
-              size: 35,
-            ),
-            onPressed: _togglePlayPause,
-          ),
-          IconButton(
-            icon: SvgPicture.asset('assets/Botones/right.svg', width: 41, height: 44),
-            onPressed: () => _seekVideo(true),
-          ),
-          IconButton(
-            icon: const Icon(Icons.fullscreen, color: Colors.white, size: 35),
-            onPressed: _toggleFullScreen,
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   void dispose() {
     _videoController.removeListener(_checkEnd);
@@ -193,18 +164,18 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
       body: Stack(
         children: [
           Center(
-            child: _videoController.value.isInitialized
-                ? AspectRatio(
+            child: _isLoading
+                ? const CircularProgressIndicator(color: Colors.white)
+                : AspectRatio(
                     aspectRatio: _videoController.value.aspectRatio,
                     child: VideoPlayer(_videoController),
-                  )
-                : const CircularProgressIndicator(),
+                  ),
           ),
-          narrativeProgressBar(
+          if (!_isLoading) narrativeProgressBar(
             positiveCount: controller.positiveCount,
             negativeCount: controller.negativeCount,
           ),
-          Positioned(
+          if (!_isLoading) Positioned(
             top: 20,
             right: 20,
             child: IconButton(
@@ -212,13 +183,20 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
               onPressed: _openPauseMenu,
             ),
           ),
-          if (!_showFeedback)
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: _buildVideoControls(),
+          if (!_isLoading && !_showFeedback) Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: videoControls( // 🧠 Aquí usas los controles bonitos
+              controller: _videoController,
+              onRewind: () => _seekVideo(false),
+              onPlayPause: _togglePlayPause,
+              onForward: () => _seekVideo(true),
+              onFullScreen: _toggleFullScreen,
+              onSaveVideo: () {}, // Si quieres guardar, lo implementas
+              isPlaying: _videoController.value.isPlaying,
             ),
+          ),
           if (_showButtons && !_showFeedback)
             Align(
               alignment: Alignment.bottomCenter,
@@ -230,12 +208,12 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
                     ElevatedButton(
                       onPressed: () => _makeDecision(true),
                       style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-                      child: const Text('Arrebatarle el teléfono y mostrarle la realidad.'),
+                      child: const Text('Opción Positiva'),
                     ),
                     ElevatedButton(
                       onPressed: () => _makeDecision(false),
                       style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                      child: const Text('Dejarlo, quizás no es tan grave.'),
+                      child: const Text('Opción Negativa'),
                     ),
                   ],
                 ),

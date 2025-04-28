@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:video_player/video_player.dart'; // ✅ NECESARIO
-
+import 'package:video_player/video_player.dart';
 
 const Color controlBackgroundColor = Colors.black54;
 const EdgeInsets controlPadding = EdgeInsets.symmetric(vertical: 10, horizontal: 20);
@@ -14,32 +13,32 @@ Widget videoControls({
   required VoidCallback onForward,
   required VoidCallback onFullScreen,
   required VoidCallback onSaveVideo,
-  required bool isPlaying, // ✅ Aquí añadimos isPlaying
+  required bool isPlaying,
 }) {
   return Container(
-    color: controlBackgroundColor,
-    padding: controlPadding,
+    color: Colors.black54,
+    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
     child: Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         IconButton(
-          icon: const Icon(Icons.replay_10, size: iconSize, color: iconColor),
+          icon: Image.asset('assets/Botones/left.png', height: 40), // Ahora PNG
           onPressed: onRewind,
         ),
         IconButton(
           icon: Icon(
-            isPlaying ? Icons.pause : Icons.play_arrow, // ✅ Usado aquí
-            size: iconSize,
-            color: iconColor,
+            isPlaying ? Icons.pause : Icons.play_arrow,
+            size: 40,
+            color: Colors.white,
           ),
           onPressed: onPlayPause,
         ),
         IconButton(
-          icon: const Icon(Icons.forward_10, size: iconSize, color: iconColor),
+          icon: Image.asset('assets/Botones/right.png', height: 40), // Ahora PNG
           onPressed: onForward,
         ),
         IconButton(
-          icon: const Icon(Icons.fullscreen, size: iconSize, color: iconColor),
+          icon: const Icon(Icons.fullscreen, size: 40, color: Colors.white),
           onPressed: onFullScreen,
         ),
       ],

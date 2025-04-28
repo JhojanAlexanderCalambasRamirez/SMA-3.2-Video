@@ -11,7 +11,7 @@ class HomeScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset('assets/Logo/Logo.png'), // Cambia con la ruta de tu logo
+            Image.asset('assets/Logo/LogoAppIntro.png', width: 200), // Cambiar aquí
             const SizedBox(height: 20),
             const Text(
               'CLOCK SPIRIT',
@@ -26,13 +26,13 @@ class HomeScreen extends StatelessWidget {
             const SizedBox(height: 40),
             ElevatedButton(
               onPressed: () {
-                Navigator.pushNamed(context, '/upload'); // Navega a la pantalla de carga de video
+                Navigator.pushNamed(context, '/upload');
               },
               child: const Text('Iniciar'),
             ),
             ElevatedButton(
               onPressed: () {
-                SystemNavigator.pop(); // Cierra la aplicación
+                SystemNavigator.pop();
               },
               child: const Text('Salir'),
             ),
