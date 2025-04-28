@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_application_1/utils/decision_flow.dart';
-import 'package:flutter_application_1/utils/button_message_decision.dart'; // 👈 Importamos el nuevo archivo
+import 'package:flutter_application_1/utils/button_message_decision.dart';
 import 'package:flutter_application_1/screens/summary_screen.dart';
 import 'package:flutter_application_1/screens/pause_screen.dart';
 
@@ -18,10 +17,9 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
   late VideoPlayerController _videoController;
   bool _showButtons = false;
   bool _showFeedback = false;
-  bool _isFullScreen = false;
   String _feedbackImage = '';
   bool _isLoading = true;
-  List<String> _buttonMessages = ['', '']; // 👈 Mensajes dinámicos
+  List<String> _buttonMessages = ['', ''];
 
   @override
   void initState() {
@@ -31,7 +29,7 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
 
   void _initializeVideo() {
     final videoName = controller.currentNode.videoName;
-    _buttonMessages = ButtonMessageDecision.getMessages(videoName); // 👈 Actualizamos mensajes
+    _buttonMessages = ButtonMessageDecision.getMessages(videoName);
 
     _videoController = VideoPlayerController.asset('assets/videos/$videoName.mp4')
       ..initialize().then((_) {
@@ -127,26 +125,6 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
     });
   }
 
-  void _toggleFullScreen() {
-    setState(() {
-      _isFullScreen = !_isFullScreen;
-    });
-
-    if (_isFullScreen) {
-      SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-      SystemChrome.setPreferredOrientations([
-        DeviceOrientation.landscapeLeft,
-        DeviceOrientation.landscapeRight,
-      ]);
-    } else {
-      SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-      SystemChrome.setPreferredOrientations([
-        DeviceOrientation.portraitUp,
-        DeviceOrientation.portraitDown,
-      ]);
-    }
-  }
-
   void _openPauseMenu() {
     _videoController.pause();
     Navigator.push(context, MaterialPageRoute(builder: (_) => const PauseScreen()));
@@ -173,8 +151,6 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
                     child: VideoPlayer(_videoController),
                   ),
           ),
-
-          // Botón salir
           if (!_isLoading)
             Positioned(
               top: 30,
@@ -189,8 +165,6 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
                 onPressed: _openPauseMenu,
               ),
             ),
-
-          // Panel inferior
           if (!_isLoading && !_showFeedback)
             Positioned(
               bottom: 0,
@@ -204,55 +178,49 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
                   children: [
                     if (_showButtons)
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 4),
-                              child: ElevatedButton(
-                                onPressed: () => _makeDecision(true),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.white.withOpacity(0.2),
-                                  shape: RoundedRectangleBorder(
-                                    side: const BorderSide(color: Colors.white),
-                                    borderRadius: BorderRadius.circular(30),
-                                  ),
-                                  padding: const EdgeInsets.symmetric(vertical: 14),
+                            child: ElevatedButton(
+                              onPressed: () => _makeDecision(true),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.white.withOpacity(0.2),
+                                shape: RoundedRectangleBorder(
+                                  side: const BorderSide(color: Colors.white),
+                                  borderRadius: BorderRadius.circular(30),
                                 ),
-                                child: Text(
-                                  _buttonMessages[0],
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 13,
-                                  ),
-                                  textAlign: TextAlign.center,
+                                padding: const EdgeInsets.symmetric(vertical: 14),
+                              ),
+                              child: Text(
+                                _buttonMessages[0],
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 13,
                                 ),
+                                textAlign: TextAlign.center,
                               ),
                             ),
                           ),
+                          const SizedBox(width: 8),
                           Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 4),
-                              child: ElevatedButton(
-                                onPressed: () => _makeDecision(false),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.white.withOpacity(0.2),
-                                  shape: RoundedRectangleBorder(
-                                    side: const BorderSide(color: Colors.white),
-                                    borderRadius: BorderRadius.circular(30),
-                                  ),
-                                  padding: const EdgeInsets.symmetric(vertical: 14),
+                            child: ElevatedButton(
+                              onPressed: () => _makeDecision(false),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.white.withOpacity(0.2),
+                                shape: RoundedRectangleBorder(
+                                  side: const BorderSide(color: Colors.white),
+                                  borderRadius: BorderRadius.circular(30),
                                 ),
-                                child: Text(
-                                  _buttonMessages[1],
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 13,
-                                  ),
-                                  textAlign: TextAlign.center,
+                                padding: const EdgeInsets.symmetric(vertical: 14),
+                              ),
+                              child: Text(
+                                _buttonMessages[1],
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 13,
                                 ),
+                                textAlign: TextAlign.center,
                               ),
                             ),
                           ),
@@ -278,18 +246,12 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
                           icon: Image.asset('assets/Botones/right.png', height: 30),
                           onPressed: () => _seekVideo(true),
                         ),
-                        IconButton(
-                          icon: const Icon(Icons.fullscreen, color: Colors.white, size: 30),
-                          onPressed: _toggleFullScreen,
-                        ),
                       ],
                     ),
                   ],
                 ),
               ),
             ),
-
-          // Feedback
           if (_showFeedback)
             Positioned.fill(
               child: Stack(
