@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_application_1/utils/decision_flow.dart';
-import 'package:flutter_application_1/utils/progress_bar.dart';
-import 'package:flutter_application_1/utils/video_controls.dart';
 import 'package:flutter_application_1/screens/summary_screen.dart';
 import 'package:flutter_application_1/screens/pause_screen.dart';
 
@@ -172,38 +170,7 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
                   ),
           ),
 
-          // Barra de progreso vertical (reemplazo del narrativeProgressBar)
-          if (!_isLoading)
-            Positioned(
-              top: 100,
-              left: 10,
-              bottom: 100,
-              child: Container(
-                width: 20,
-                decoration: BoxDecoration(
-                  color: Colors.black,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Align(
-                  alignment: Alignment.topCenter,
-                  child: FractionallySizedBox(
-                    heightFactor: (controller.positiveCount + controller.negativeCount).clamp(0, 3) / 3,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: controller.positiveCount >= 3
-                            ? Colors.green
-                            : controller.negativeCount >= 3
-                                ? Colors.red
-                                : Colors.yellow,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-
-          // Botón de salir (exit.png)
+          // Botón de salir
           if (!_isLoading)
             Positioned(
               top: 30,
@@ -219,76 +186,100 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
               ),
             ),
 
-          // Controles de video (solo retroceder, play, adelantar, fullscreen)
+          // Barra negra inferior
           if (!_isLoading && !_showFeedback)
             Positioned(
-              bottom: 20,
-              right: 20,
-              child: videoControls(
-                controller: _videoController,
-                onRewind: () => _seekVideo(false),
-                onPlayPause: _togglePlayPause,
-                onForward: () => _seekVideo(true),
-                onFullScreen: _toggleFullScreen,
-                onSaveVideo: () {},
-                isPlaying: _videoController.value.isPlaying,
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                color: Colors.black.withOpacity(0.6),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    if (_showButtons) ...[
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                          child: ElevatedButton(
+                            onPressed: () => _makeDecision(true),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white.withOpacity(0.2),
+                              shape: RoundedRectangleBorder(
+                                side: const BorderSide(color: Colors.white, width: 1),
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                            ),
+                            child: const Text(
+                              'Arrebatarle el teléfono y mostrarle la realidad.',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                          child: ElevatedButton(
+                            onPressed: () => _makeDecision(false),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white.withOpacity(0.2),
+                              shape: RoundedRectangleBorder(
+                                side: const BorderSide(color: Colors.white, width: 1),
+                                borderRadius: BorderRadius.circular(30),
+                              ),
+                            ),
+                            child: const Text(
+                              'Dejarlo, quizás no es tan grave.',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ] else ...[
+                      const Spacer(),
+                    ],
+                    Row(
+                      children: [
+                        IconButton(
+                          icon: Image.asset('assets/Botones/left.png', height: 30),
+                          onPressed: () => _seekVideo(false),
+                        ),
+                        IconButton(
+                          icon: Icon(
+                            _videoController.value.isPlaying ? Icons.pause : Icons.play_arrow,
+                            color: Colors.white,
+                            size: 30,
+                          ),
+                          onPressed: _togglePlayPause,
+                        ),
+                        IconButton(
+                          icon: Image.asset('assets/Botones/right.png', height: 30),
+                          onPressed: () => _seekVideo(true),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.fullscreen, color: Colors.white, size: 30),
+                          onPressed: _toggleFullScreen,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
 
-          // Botones de decisión cuando toque decidir
-          if (_showButtons && !_showFeedback)
-            Positioned(
-              bottom: 30,
-              left: 20,
-              right: 20,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      child: ElevatedButton(
-                        onPressed: () => _makeDecision(true),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue.shade700,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                        ),
-                        child: const Text(
-                          'Arrebatarle el teléfono y mostrarle la realidad.',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      child: ElevatedButton(
-                        onPressed: () => _makeDecision(false),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blue.shade700,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                        ),
-                        child: const Text(
-                          'Dejarlo, quizás no es tan grave.',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-          // Feedback de éxito o fracaso
+          // Feedback
           if (_showFeedback)
             Positioned.fill(
               child: Stack(

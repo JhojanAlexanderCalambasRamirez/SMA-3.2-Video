@@ -12,7 +12,6 @@ Widget videoControls({
   required VoidCallback onPlayPause,
   required VoidCallback onForward,
   required VoidCallback onFullScreen,
-  required VoidCallback onSaveVideo,
   required bool isPlaying,
 }) {
   return Container(
