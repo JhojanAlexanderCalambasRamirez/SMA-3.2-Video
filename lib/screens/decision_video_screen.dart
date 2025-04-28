@@ -170,7 +170,7 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
                   ),
           ),
 
-          // Botón de salir
+          // Botón de salir (arriba a la derecha)
           if (!_isLoading)
             Positioned(
               top: 30,
@@ -186,7 +186,7 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
               ),
             ),
 
-          // Barra negra inferior
+          // Barra negra inferior con controles y botones de decisiones
           if (!_isLoading && !_showFeedback)
             Positioned(
               bottom: 0,
@@ -195,62 +195,68 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
               child: Container(
                 color: Colors.black.withOpacity(0.6),
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    if (_showButtons) ...[
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 4),
-                          child: ElevatedButton(
-                            onPressed: () => _makeDecision(true),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.white.withOpacity(0.2),
-                              shape: RoundedRectangleBorder(
-                                side: const BorderSide(color: Colors.white, width: 1),
-                                borderRadius: BorderRadius.circular(30),
+                    if (_showButtons)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 4),
+                              child: ElevatedButton(
+                                onPressed: () => _makeDecision(true),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.white.withOpacity(0.2),
+                                  shape: RoundedRectangleBorder(
+                                    side: const BorderSide(color: Colors.white),
+                                    borderRadius: BorderRadius.circular(30),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(vertical: 14),
+                                ),
+                                child: const Text(
+                                  'Arrebatarle el teléfono y mostrarle la realidad.',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 13,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
                               ),
-                            ),
-                            child: const Text(
-                              'Arrebatarle el teléfono y mostrarle la realidad.',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 12,
-                              ),
-                              textAlign: TextAlign.center,
                             ),
                           ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 4),
-                          child: ElevatedButton(
-                            onPressed: () => _makeDecision(false),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.white.withOpacity(0.2),
-                              shape: RoundedRectangleBorder(
-                                side: const BorderSide(color: Colors.white, width: 1),
-                                borderRadius: BorderRadius.circular(30),
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 4),
+                              child: ElevatedButton(
+                                onPressed: () => _makeDecision(false),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.white.withOpacity(0.2),
+                                  shape: RoundedRectangleBorder(
+                                    side: const BorderSide(color: Colors.white),
+                                    borderRadius: BorderRadius.circular(30),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(vertical: 14),
+                                ),
+                                child: const Text(
+                                  'Dejarlo, quizás no es tan grave.',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 13,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
                               ),
-                            ),
-                            child: const Text(
-                              'Dejarlo, quizás no es tan grave.',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 12,
-                              ),
-                              textAlign: TextAlign.center,
                             ),
                           ),
-                        ),
+                        ],
                       ),
-                    ] else ...[
-                      const Spacer(),
-                    ],
+                    const SizedBox(height: 10),
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         IconButton(
                           icon: Image.asset('assets/Botones/left.png', height: 30),
@@ -279,7 +285,7 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
               ),
             ),
 
-          // Feedback
+          // Pantalla de feedback
           if (_showFeedback)
             Positioned.fill(
               child: Stack(
