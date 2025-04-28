@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_application_1/utils/decision_flow.dart';
+import 'package:flutter_application_1/utils/button_message_decision.dart'; // 👈 Importamos el nuevo archivo
 import 'package:flutter_application_1/screens/summary_screen.dart';
 import 'package:flutter_application_1/screens/pause_screen.dart';
 
@@ -20,6 +21,7 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
   bool _isFullScreen = false;
   String _feedbackImage = '';
   bool _isLoading = true;
+  List<String> _buttonMessages = ['', '']; // 👈 Mensajes dinámicos
 
   @override
   void initState() {
@@ -29,6 +31,8 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
 
   void _initializeVideo() {
     final videoName = controller.currentNode.videoName;
+    _buttonMessages = ButtonMessageDecision.getMessages(videoName); // 👈 Actualizamos mensajes
+
     _videoController = VideoPlayerController.asset('assets/videos/$videoName.mp4')
       ..initialize().then((_) {
         setState(() {
@@ -170,7 +174,7 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
                   ),
           ),
 
-          // Botón de salir (arriba a la derecha)
+          // Botón salir
           if (!_isLoading)
             Positioned(
               top: 30,
@@ -186,7 +190,7 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
               ),
             ),
 
-          // Barra negra inferior con controles y botones de decisiones
+          // Panel inferior
           if (!_isLoading && !_showFeedback)
             Positioned(
               bottom: 0,
@@ -215,9 +219,9 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
                                   ),
                                   padding: const EdgeInsets.symmetric(vertical: 14),
                                 ),
-                                child: const Text(
-                                  'Arrebatarle el teléfono y mostrarle la realidad.',
-                                  style: TextStyle(
+                                child: Text(
+                                  _buttonMessages[0],
+                                  style: const TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold,
                                     fontSize: 13,
@@ -240,9 +244,9 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
                                   ),
                                   padding: const EdgeInsets.symmetric(vertical: 14),
                                 ),
-                                child: const Text(
-                                  'Dejarlo, quizás no es tan grave.',
-                                  style: TextStyle(
+                                child: Text(
+                                  _buttonMessages[1],
+                                  style: const TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold,
                                     fontSize: 13,
@@ -285,7 +289,7 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
               ),
             ),
 
-          // Pantalla de feedback
+          // Feedback
           if (_showFeedback)
             Positioned.fill(
               child: Stack(
