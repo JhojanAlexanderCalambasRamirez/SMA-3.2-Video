@@ -5,6 +5,7 @@ import 'package:flutter_application_1/utils/button_message_decision.dart';
 import 'package:flutter_application_1/utils/progress_bar.dart';
 import 'package:flutter_application_1/screens/summary_screen.dart';
 import 'package:flutter_application_1/screens/pause_screen.dart';
+import 'package:flutter_application_1/utils/FeedBackDecision.dart';
 
 class DecisionVideoScreen extends StatefulWidget {
   const DecisionVideoScreen({super.key});
@@ -141,7 +142,6 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
     return Scaffold(
       backgroundColor: Colors.black,
       body: Stack(children: [
-        // Video
         Center(
           child: _isLoading
               ? const CircularProgressIndicator(color: Colors.white)
@@ -150,8 +150,6 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
                   child: VideoPlayer(_videoController),
                 ),
         ),
-
-        // Botón de salir
         if (!_isLoading)
           Positioned(
             top: 30,
@@ -166,14 +164,10 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
               onPressed: _openPauseMenu,
             ),
           ),
-
-        // Barra narrativa
         NarrativeProgressBar(
           positiveCount: controller.positiveCount,
           negativeCount: controller.negativeCount,
         ),
-
-        // Panel inferior con decisiones + controles
         if (!_isLoading && !_showFeedback)
           Positioned(
             bottom: 0,
@@ -208,8 +202,7 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       IconButton(
-                        icon: Image.asset('assets/Botones/left.png',
-                            height: 30),
+                        icon: Image.asset('assets/Botones/left.png', height: 30),
                         onPressed: () => _seekVideo(false),
                       ),
                       IconButton(
@@ -222,8 +215,7 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
                         onPressed: _togglePlayPause,
                       ),
                       IconButton(
-                        icon: Image.asset('assets/Botones/right.png',
-                            height: 30),
+                        icon: Image.asset('assets/Botones/right.png', height: 30),
                         onPressed: () => _seekVideo(true),
                       ),
                     ],
@@ -232,39 +224,18 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
               ),
             ),
           ),
-
-        // Feedback final
         if (_showFeedback)
           Positioned.fill(
-            child: Stack(children: [
-              Image.asset(
-                _feedbackImage,
-                fit: BoxFit.cover,
-                width: double.infinity,
-                height: double.infinity,
-              ),
-              Center(
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white70,
-                    foregroundColor: Colors.black,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 24, vertical: 30),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20)),
-                  ),
-                  onPressed: _continueAfterFeedback,
-                  child: const Text('Continuar'),
-                ),
-              ),
-            ]),
+            child: FeedBackDecision(
+              feedbackImage: _feedbackImage,
+              onContinue: _continueAfterFeedback,
+            ),
           ),
       ]),
     );
   }
 }
 
-/// Widget personalizado para los botones de decisión con feedback visual
 class DecisionButton extends StatefulWidget {
   final String text;
   final VoidCallback onTap;
@@ -273,6 +244,7 @@ class DecisionButton extends StatefulWidget {
     required this.text,
     required this.onTap,
   });
+
   @override
   State<DecisionButton> createState() => _DecisionButtonState();
 }
