@@ -78,3 +78,9 @@ flutter:
     - assets/Logo/Logo.png
     - assets/Logo/LogoAppIntro.svg
     - assets/Logo/LogoInicioApp.svg
+    - assets/Botones/Play.png
+    - assets/Botones/Pause.png
+    - assets/Botones/Salir_Pausa.png
+    - assets/Botones/Reaunudar_Pausa.png
+    - assets/Botones/Iniciar_Home.png
+    - assets/Botones/Salir_Home.png

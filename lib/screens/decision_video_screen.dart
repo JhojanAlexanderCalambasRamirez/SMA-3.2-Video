@@ -235,10 +235,11 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
                           onPressed: () => _seekVideo(false),
                         ),
                         IconButton(
-                          icon: Icon(
-                            _videoController.value.isPlaying ? Icons.pause : Icons.play_arrow,
-                            color: Colors.white,
-                            size: 30,
+                          icon: Image.asset(
+                            _videoController.value.isPlaying
+                                ? 'assets/Botones/Pause.png'
+                                : 'assets/Botones/Play.png',
+                            height: 30,
                           ),
                           onPressed: _togglePlayPause,
                         ),
