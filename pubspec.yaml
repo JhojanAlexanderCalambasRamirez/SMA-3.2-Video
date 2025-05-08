@@ -86,3 +86,8 @@ flutter:
     - assets/Botones/Salir_Home.png
     - assets/Extras/Barra_Progreso.png
     - assets/Botones/Continuar_Decision.png
+    - assets/Imagenes/Final_Neutral.png
+    - assets/Imagenes/Final_Negativo.png
+    - assets/Imagenes/Final_Positivo.png
+    - assets/Imagenes/Pantalla_Inicial.png
+    - assets/Imagenes/Pantalla_Logo.png
