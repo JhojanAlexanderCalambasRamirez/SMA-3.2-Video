@@ -1,52 +1,31 @@
 name: flutter_application_1
 description: "A new Flutter project."
-publish_to: 'none' # No se publicará en pub.dev
+publish_to: 'none'
 
-# Definición de la versión de la aplicación
 version: 1.0.0+1
 
-# Definición del entorno y compatibilidad con Flutter
 environment:
-  sdk: '>=3.6.2 <4.0.0' # Compatible con Flutter 3.6.2
+  sdk: '>=3.6.2 <4.0.0'
 
 dependencies:
   flutter:
     sdk: flutter
-
-  # Íconos de Cupertino para UI en iOS
   cupertino_icons: ^1.0.8
-
-  # Selector de imágenes y videos desde galería
-  image_picker: ^1.0.5 
-
-  # Manejo de almacenamiento local (archivos, rutas)
+  image_picker: ^1.0.5
   path_provider: ^2.1.5
-
-  # Cliente HTTP para descargas de archivos/videos
   dio: ^5.8.0+1
-
-  # Reproductor de video en Flutter
   video_player: ^2.8.2
-
-  # Soporte de video en Flutter Web
   video_player_web: ^2.0.17
-
-  # Manejo de almacenamiento local con SharedPreferences
   shared_preferences: ^2.2.2
-
-  # Manejo de estados (opcional, mejora la gestión de estado)
   provider: ^6.1.0
-
-  # Soporte para permisos en Android/iOS
   permission_handler: ^11.3.0
-
   flutter_svg: ^2.0.7
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
-  flutter_lints: ^3.0.0 # Linter actualizado para Flutter 3.6.2
+  flutter_lints: ^3.0.0
+  flutter_native_splash: ^2.4.0
 
 flutter:
   uses-material-design: true
@@ -84,10 +63,18 @@ flutter:
     - assets/Botones/Reaunudar_Pausa.png
     - assets/Botones/Iniciar_Home.png
     - assets/Botones/Salir_Home.png
-    - assets/Extras/Barra_Progreso.png
     - assets/Botones/Continuar_Decision.png
+    - assets/Extras/Barra_Progreso.png
     - assets/Imagenes/Final_Neutral.png
     - assets/Imagenes/Final_Negativo.png
     - assets/Imagenes/Final_Positivo.png
     - assets/Imagenes/Pantalla_Inicial.png
     - assets/Imagenes/Pantalla_Logo.png
+    - assets/Imagenes/Pantalla_Carga.png
+
+flutter_native_splash:
+  color: "#ffffff"
+  image: assets/Imagenes/Pantalla_Carga.png
+  android: true
+  ios: true
+  fullscreen: true

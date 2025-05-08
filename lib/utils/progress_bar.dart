@@ -59,3 +59,13 @@ class NarrativeProgressBar extends StatelessWidget {
     );
   }
 }
+
+//NOTAS PARA MEJORAR LA UI
+
+//Detalles clave:
+
+//bottom: 4 y height: 182 aseguran que el borde inferior del progreso llegue hasta el borde blanco exacto.
+
+//left/right: 8 centran el grosor de la barra en el canal blanco interior.
+
+//Puedes ajustar a left: 7 o right: 9 si algún borde se ve ligeramente desplazado.
