@@ -84,3 +84,5 @@ flutter:
     - assets/Botones/Reaunudar_Pausa.png
     - assets/Botones/Iniciar_Home.png
     - assets/Botones/Salir_Home.png
+    - assets/Extras/Barra_Progreso.png
+    - assets/Botones/Continuar_Decision.png

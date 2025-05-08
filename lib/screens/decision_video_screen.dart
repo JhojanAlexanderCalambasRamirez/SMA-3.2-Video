@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter_application_1/utils/decision_flow.dart';
 import 'package:flutter_application_1/utils/button_message_decision.dart';
+import 'package:flutter_application_1/utils/progress_bar.dart';
 import 'package:flutter_application_1/screens/summary_screen.dart';
 import 'package:flutter_application_1/screens/pause_screen.dart';
 
@@ -33,9 +34,7 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
 
     _videoController = VideoPlayerController.asset('assets/videos/$videoName.mp4')
       ..initialize().then((_) {
-        setState(() {
-          _isLoading = false;
-        });
+        setState(() => _isLoading = false);
         _videoController.play();
         _videoController.addListener(_checkEnd);
       });
@@ -50,19 +49,22 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
       'Escena5_1', 'Escena5_2'
     ].contains(currentVideo);
 
-    if (_videoController.value.position >= _videoController.value.duration && !_showButtons && !_showFeedback) {
+    if (_videoController.value.position >= _videoController.value.duration
+        && !_showButtons
+        && !_showFeedback) {
       _videoController.removeListener(_checkEnd);
 
       if (controller.currentNode.isFinal) {
         Future.delayed(const Duration(milliseconds: 500), () {
           if (mounted) {
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => SummaryScreen()));
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (_) => SummaryScreen()),
+            );
           }
         });
       } else if (isDecisionVideo) {
-        setState(() {
-          _showButtons = true;
-        });
+        setState(() => _showButtons = true);
       } else if (isPathAfterDecision) {
         setState(() {
           _showFeedback = true;
@@ -83,18 +85,14 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
 
   void _makeDecision(bool isPositive) {
     controller.makeDecision(isPositive);
-    setState(() {
-      _showButtons = false;
-    });
+    setState(() => _showButtons = false);
     _videoController.removeListener(_checkEnd);
     _videoController.dispose();
     _initializeVideo();
   }
 
   void _continueAfterFeedback() {
-    setState(() {
-      _showFeedback = false;
-    });
+    setState(() => _showFeedback = false);
     final nextNode = controller.currentNode.positiveDecision;
     if (nextNode != null) {
       controller.setCurrentNode(nextNode);
@@ -105,16 +103,14 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
 
   void _seekVideo(bool forward) {
     if (!_videoController.value.isInitialized) return;
-    final position = _videoController.value.position;
-    final duration = _videoController.value.duration;
-    Duration newPosition = forward
-        ? position + const Duration(seconds: 10)
-        : position - const Duration(seconds: 10);
-
-    if (newPosition < Duration.zero) newPosition = Duration.zero;
-    if (newPosition > duration) newPosition = duration;
-
-    _videoController.seekTo(newPosition);
+    final pos = _videoController.value.position;
+    final dur = _videoController.value.duration;
+    var newPos = forward
+        ? pos + const Duration(seconds: 10)
+        : pos - const Duration(seconds: 10);
+    if (newPos < Duration.zero) newPos = Duration.zero;
+    if (newPos > dur) newPos = dur;
+    _videoController.seekTo(newPos);
   }
 
   void _togglePlayPause() {
@@ -127,7 +123,10 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
 
   void _openPauseMenu() {
     _videoController.pause();
-    Navigator.push(context, MaterialPageRoute(builder: (_) => const PauseScreen()));
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const PauseScreen()),
+    );
   }
 
   @override
@@ -141,144 +140,175 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: Stack(
-        children: [
-          Center(
-            child: _isLoading
-                ? const CircularProgressIndicator(color: Colors.white)
-                : AspectRatio(
-                    aspectRatio: _videoController.value.aspectRatio,
-                    child: VideoPlayer(_videoController),
-                  ),
-          ),
-          if (!_isLoading)
-            Positioned(
-              top: 30,
-              right: 20,
-              child: IconButton(
-                icon: Image.asset(
-                  'assets/Botones/exit.png',
-                  width: 44,
-                  height: 44,
-                  fit: BoxFit.contain,
+      body: Stack(children: [
+        // Video
+        Center(
+          child: _isLoading
+              ? const CircularProgressIndicator(color: Colors.white)
+              : AspectRatio(
+                  aspectRatio: _videoController.value.aspectRatio,
+                  child: VideoPlayer(_videoController),
                 ),
-                onPressed: _openPauseMenu,
+        ),
+
+        // Botón de salir
+        if (!_isLoading)
+          Positioned(
+            top: 30,
+            right: 20,
+            child: IconButton(
+              icon: Image.asset(
+                'assets/Botones/exit.png',
+                width: 44,
+                height: 44,
+                fit: BoxFit.contain,
               ),
+              onPressed: _openPauseMenu,
             ),
-          if (!_isLoading && !_showFeedback)
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              child: Container(
-                color: Colors.black.withOpacity(0.6),
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (_showButtons)
-                      Row(
-                        children: [
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: () => _makeDecision(true),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.white.withOpacity(0.2),
-                                shape: RoundedRectangleBorder(
-                                  side: const BorderSide(color: Colors.white),
-                                  borderRadius: BorderRadius.circular(30),
-                                ),
-                                padding: const EdgeInsets.symmetric(vertical: 14),
-                              ),
-                              child: Text(
-                                _buttonMessages[0],
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 13,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: () => _makeDecision(false),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.white.withOpacity(0.2),
-                                shape: RoundedRectangleBorder(
-                                  side: const BorderSide(color: Colors.white),
-                                  borderRadius: BorderRadius.circular(30),
-                                ),
-                                padding: const EdgeInsets.symmetric(vertical: 14),
-                              ),
-                              child: Text(
-                                _buttonMessages[1],
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 13,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    const SizedBox(height: 10),
+          ),
+
+        // Barra narrativa
+        NarrativeProgressBar(
+          positiveCount: controller.positiveCount,
+          negativeCount: controller.negativeCount,
+        ),
+
+        // Panel inferior con decisiones + controles
+        if (!_isLoading && !_showFeedback)
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              color: Colors.black.withOpacity(0.6),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (_showButtons)
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        IconButton(
-                          icon: Image.asset('assets/Botones/left.png', height: 30),
-                          onPressed: () => _seekVideo(false),
-                        ),
-                        IconButton(
-                          icon: Image.asset(
-                            _videoController.value.isPlaying
-                                ? 'assets/Botones/Pause.png'
-                                : 'assets/Botones/Play.png',
-                            height: 30,
+                        Expanded(
+                          child: DecisionButton(
+                            text: _buttonMessages[0],
+                            onTap: () => _makeDecision(true),
                           ),
-                          onPressed: _togglePlayPause,
                         ),
-                        IconButton(
-                          icon: Image.asset('assets/Botones/right.png', height: 30),
-                          onPressed: () => _seekVideo(true),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: DecisionButton(
+                            text: _buttonMessages[1],
+                            onTap: () => _makeDecision(false),
+                          ),
                         ),
                       ],
                     ),
-                  ],
-                ),
-              ),
-            ),
-          if (_showFeedback)
-            Positioned.fill(
-              child: Stack(
-                children: [
-                  Image.asset(
-                    _feedbackImage,
-                    fit: BoxFit.cover,
-                    width: double.infinity,
-                    height: double.infinity,
-                  ),
-                  Center(
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white70,
-                        foregroundColor: Colors.black,
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 30),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        icon: Image.asset('assets/Botones/left.png',
+                            height: 30),
+                        onPressed: () => _seekVideo(false),
                       ),
-                      onPressed: _continueAfterFeedback,
-                      child: const Text('Continuar'),
-                    ),
+                      IconButton(
+                        icon: Image.asset(
+                          _videoController.value.isPlaying
+                              ? 'assets/Botones/Pause.png'
+                              : 'assets/Botones/Play.png',
+                          height: 30,
+                        ),
+                        onPressed: _togglePlayPause,
+                      ),
+                      IconButton(
+                        icon: Image.asset('assets/Botones/right.png',
+                            height: 30),
+                        onPressed: () => _seekVideo(true),
+                      ),
+                    ],
                   ),
                 ],
               ),
             ),
-        ],
+          ),
+
+        // Feedback final
+        if (_showFeedback)
+          Positioned.fill(
+            child: Stack(children: [
+              Image.asset(
+                _feedbackImage,
+                fit: BoxFit.cover,
+                width: double.infinity,
+                height: double.infinity,
+              ),
+              Center(
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white70,
+                    foregroundColor: Colors.black,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 24, vertical: 30),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20)),
+                  ),
+                  onPressed: _continueAfterFeedback,
+                  child: const Text('Continuar'),
+                ),
+              ),
+            ]),
+          ),
+      ]),
+    );
+  }
+}
+
+/// Widget personalizado para los botones de decisión con feedback visual
+class DecisionButton extends StatefulWidget {
+  final String text;
+  final VoidCallback onTap;
+  const DecisionButton({
+    super.key,
+    required this.text,
+    required this.onTap,
+  });
+  @override
+  State<DecisionButton> createState() => _DecisionButtonState();
+}
+
+class _DecisionButtonState extends State<DecisionButton> {
+  bool _pressed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: (_) => setState(() => _pressed = true),
+      onTapUp: (_) {
+        setState(() => _pressed = false);
+        widget.onTap();
+      },
+      onTapCancel: () => setState(() => _pressed = false),
+      child: AnimatedScale(
+        scale: _pressed ? 0.95 : 1.0,
+        duration: const Duration(milliseconds: 100),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.2),
+            borderRadius: BorderRadius.circular(30),
+            border: Border.all(color: Colors.white),
+          ),
+          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
+          child: Text(
+            widget.text,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 13,
+            ),
+          ),
+        ),
       ),
     );
   }

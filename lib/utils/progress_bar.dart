@@ -1,33 +1,58 @@
 import 'package:flutter/material.dart';
 
-Widget narrativeProgressBar({
-  required int positiveCount,
-  required int negativeCount,
-}) {
-  int totalDecisions = (positiveCount + negativeCount).clamp(0, 3);
-  double progress = totalDecisions / 3;
+class NarrativeProgressBar extends StatelessWidget {
+  final int positiveCount;
+  final int negativeCount;
 
-  Color color;
-  if (positiveCount >= 3) {
-    color = Colors.green;
-  } else if (negativeCount >= 3) {
-    color = Colors.red;
-  } else {
-    color = Colors.blue;
-  }
+  const NarrativeProgressBar({
+    super.key,
+    required this.positiveCount,
+    required this.negativeCount,
+  });
 
-  return Positioned(
-    top: 40,
-    left: 20,
-    right: 20,
-    child: ClipRRect(
-      borderRadius: BorderRadius.circular(10),
-      child: LinearProgressIndicator(
-        value: progress,
-        minHeight: 10,
-        backgroundColor: Colors.grey.shade800,
-        valueColor: AlwaysStoppedAnimation<Color>(color),
+  @override
+  Widget build(BuildContext context) {
+    int total = (positiveCount + negativeCount).clamp(0, 3);
+    double progress = total / 3;
+
+    Color fillColor;
+    if (positiveCount >= 3) {
+      fillColor = Colors.greenAccent;
+    } else if (negativeCount >= 3) {
+      fillColor = Colors.redAccent;
+    } else {
+      fillColor = Colors.blueAccent;
+    }
+
+    return Positioned(
+      top: 40,
+      left: 20,
+      child: SizedBox(
+        width: 25,
+        height: 200,
+        child: Stack(
+          alignment: Alignment.bottomCenter,
+          children: [
+            Image.asset(
+              'assets/Extras/Barra_Progreso.png',
+              fit: BoxFit.fill,
+            ),
+            Positioned(
+              bottom: 4,
+              left: 6,
+              right: 6,
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 500),
+                height: (progress * 182).clamp(0, 182),
+                decoration: BoxDecoration(
+                  color: fillColor,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
-    ),
-  );
+    );
+  }
 }
