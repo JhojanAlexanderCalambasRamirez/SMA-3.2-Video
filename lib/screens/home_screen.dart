@@ -61,11 +61,11 @@ class HomeScreen extends StatelessWidget {
 
                 const SizedBox(height: 20),
 
-                // Texto con panel semitransparente
+                // Texto con fondo
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 20),
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 16, horizontal: 12),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
                   decoration: BoxDecoration(
                     color: Colors.black.withOpacity(0.4),
                     borderRadius: BorderRadius.circular(16),
@@ -79,17 +79,17 @@ class HomeScreen extends StatelessWidget {
 
                 const SizedBox(height: 30),
 
-                // Botón Iniciar
-                _CustomButton(
-                  label: 'Iniciar',
+                // Botón "Iniciar" como imagen
+                _ImageButton(
+                  imagePath: 'assets/Botones/Iniciar_Home.png',
                   onTap: () => _startGame(context),
                 ),
 
                 const SizedBox(height: 16),
 
-                // Botón Salir
-                _CustomButton(
-                  label: 'Salir',
+                // Botón "Salir" como imagen
+                _ImageButton(
+                  imagePath: 'assets/Botones/Salir_Home.png',
                   onTap: () => SystemNavigator.pop(),
                 ),
               ],
@@ -101,20 +101,20 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-class _CustomButton extends StatefulWidget {
-  final String label;
+class _ImageButton extends StatefulWidget {
+  final String imagePath;
   final VoidCallback onTap;
 
-  const _CustomButton({
-    required this.label,
+  const _ImageButton({
+    required this.imagePath,
     required this.onTap,
   });
 
   @override
-  State<_CustomButton> createState() => _CustomButtonState();
+  State<_ImageButton> createState() => _ImageButtonState();
 }
 
-class _CustomButtonState extends State<_CustomButton> {
+class _ImageButtonState extends State<_ImageButton> {
   bool _pressed = false;
 
   @override
@@ -129,25 +129,9 @@ class _CustomButtonState extends State<_CustomButton> {
       child: AnimatedOpacity(
         duration: const Duration(milliseconds: 100),
         opacity: _pressed ? 0.6 : 1.0,
-        child: Container(
-          width: 160,
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.15),
-            border: Border.all(color: Colors.white),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Center(
-            child: Text(
-              widget.label,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-                letterSpacing: 1,
-              ),
-            ),
-          ),
+        child: Image.asset(
+          widget.imagePath,
+          width: 180,
         ),
       ),
     );

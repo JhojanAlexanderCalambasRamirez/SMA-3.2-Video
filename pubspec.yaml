@@ -1,5 +1,5 @@
 name: flutter_application_1
-description: "A new Flutter project."
+description: A new Flutter project.
 publish_to: 'none'
 
 version: 1.0.0+1
@@ -20,6 +20,7 @@ dependencies:
   provider: ^6.1.0
   permission_handler: ^11.3.0
   flutter_svg: ^2.0.7
+  audioplayers: ^5.2.1
 
 dev_dependencies:
   flutter_test:
@@ -31,6 +32,13 @@ flutter:
   uses-material-design: true
 
   assets:
+    - assets/videos/
+    - assets/FeedBack/
+    - assets/Botones/
+    - assets/Logo/
+    - assets/Extras/
+    - assets/Imagenes/
+    - assets/Textos/
     - assets/videos/Escena1.mp4
     - assets/videos/Escena2.mp4
     - assets/videos/Escena3.mp4
@@ -45,7 +53,6 @@ flutter:
     - assets/videos/FinalBueno.mp4
     - assets/videos/FinalMalo.mp4
     - assets/videos/FinalNeutro.mp4
-    - assets/FeedBack/
     - assets/FeedBack/exito.png
     - assets/FeedBack/fracaso.png
     - assets/Botones/left.svg
@@ -53,9 +60,6 @@ flutter:
     - assets/Botones/left.png
     - assets/Botones/right.png
     - assets/Botones/Exit.svg
-    - assets/Logo/Logo.png
-    - assets/Logo/LogoAppIntro.png
-    - assets/Logo/LogoInicioApp.svg
     - assets/Botones/Play.png
     - assets/Botones/Pause.png
     - assets/Botones/Salir_Pausa.png
@@ -63,6 +67,10 @@ flutter:
     - assets/Botones/Iniciar_Home.png
     - assets/Botones/Salir_Home.png
     - assets/Botones/Continuar_Decision.png
+    - assets/Logo/Logo.png
+    - assets/Logo/LogoAppIntro.png
+    - assets/Logo/LogoInicioApp.svg
+    - assets/Imagenes/Pantalla_Carga.png
     - assets/Extras/Barra_Progreso.png
     - assets/Imagenes/Final_Neutral.png
     - assets/Imagenes/Final_Negativo.png
@@ -71,10 +79,12 @@ flutter:
     - assets/Imagenes/Pantalla_Logo.png
     - assets/Imagenes/Pantalla_Carga.png
     - assets/Textos/TituloApp.png
+    - assets/Sounds/ButonIniciarExperiencia.mp3
+    - assets/Sounds/ButonSalir.mp3
 
 flutter_native_splash:
-  color: "#ffffff"
-  image: assets/Imagenes/Pantalla_Carga.png
   android: true
   ios: true
   fullscreen: true
+  color: "#000000" # Color de respaldo
+  background_image: assets/Imagenes/Pantalla_Carga.png

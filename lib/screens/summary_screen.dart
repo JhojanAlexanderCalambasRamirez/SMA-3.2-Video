@@ -7,65 +7,57 @@ class SummaryScreen extends StatelessWidget {
 
   SummaryScreen({super.key});
 
-  String _getMessage() {
+  String _getImagePath() {
     final lastVideo = controller.currentNode.videoName;
-    debugPrint('Último video reproducido: $lastVideo');
-
-    String message;
     switch (lastVideo) {
       case 'FinalBueno':
-        message = '¡Felicidades! Tomaste buenas decisiones que ayudaron a Timeron a fortalecerse.';
-        debugPrint('Mensaje generado: $message');
-        break;
+        return 'assets/Imagenes/Final_Positivo.png';
       case 'FinalMalo':
-        message = 'Timeron cayó bajo la influencia de los Espíritus de la Miseria.';
-        debugPrint('Mensaje generado: $message');
-        break;
+        return 'assets/Imagenes/Final_Negativo.png';
       case 'FinalNeutro':
-        message = 'Timeron tuvo altibajos, pero continúa su lucha con esperanza.';
-        debugPrint('Mensaje generado: $message');
-        break;
       default:
-        message = 'Gracias por participar en la historia de Timeron.';
-        debugPrint('Mensaje generado: $message');
-        break;
+        return 'assets/Imagenes/Final_Neutral.png';
     }
+  }
 
-    return message;
+  void _restartStory(BuildContext context) {
+    controller.reset();
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (_) => const DecisionVideoScreen()),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final message = _getMessage();
-    debugPrint('Generando la pantalla de resumen con el mensaje: $message');
+    final imagePath = _getImagePath();
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Resumen Final')),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              message,
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          Image.asset(imagePath, fit: BoxFit.cover),
+          Positioned(
+            bottom: 40,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.black.withOpacity(0.7),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24, vertical: 12),
+                ),
+                onPressed: () => _restartStory(context),
+                icon: const Icon(Icons.replay, color: Colors.white),
+                label: const Text(
+                  'Reiniciar Historia',
+                  style: TextStyle(color: Colors.white, fontSize: 18),
+                ),
+              ),
             ),
-            const SizedBox(height: 30),
-            ElevatedButton.icon(
-              icon: const Icon(Icons.replay),
-              label: const Text('Reiniciar Historia'),
-              onPressed: () {
-                debugPrint('Reiniciando la historia...');
-                controller.reset();
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (_) => const DecisionVideoScreen()),
-                );
-              },
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
