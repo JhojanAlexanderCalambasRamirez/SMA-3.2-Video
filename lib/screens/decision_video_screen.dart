@@ -123,12 +123,15 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
   }
 
   void _openPauseMenu() {
-    _videoController.pause();
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const PauseScreen()),
-    );
-  }
+  _videoController.pause();
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (_) => PauseScreen(videoController: _videoController),
+    ),
+  );
+}
+
 
   @override
   void dispose() {

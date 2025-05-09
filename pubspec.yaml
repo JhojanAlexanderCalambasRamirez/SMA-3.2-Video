@@ -48,14 +48,13 @@ flutter:
     - assets/FeedBack/
     - assets/FeedBack/exito.png
     - assets/FeedBack/fracaso.png
-    - assets/Botones/
     - assets/Botones/left.svg
     - assets/Botones/right.svg
     - assets/Botones/left.png
     - assets/Botones/right.png
     - assets/Botones/Exit.svg
     - assets/Logo/Logo.png
-    - assets/Logo/LogoAppIntro.svg
+    - assets/Logo/LogoAppIntro.png
     - assets/Logo/LogoInicioApp.svg
     - assets/Botones/Play.png
     - assets/Botones/Pause.png
@@ -71,6 +70,7 @@ flutter:
     - assets/Imagenes/Pantalla_Inicial.png
     - assets/Imagenes/Pantalla_Logo.png
     - assets/Imagenes/Pantalla_Carga.png
+    - assets/Textos/TituloApp.png
 
 flutter_native_splash:
   color: "#ffffff"

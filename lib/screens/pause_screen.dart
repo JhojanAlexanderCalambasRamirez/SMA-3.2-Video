@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_application_1/screens/home_screen.dart';
-import 'package:flutter_application_1/screens/decision_video_screen.dart';
 import 'package:flutter_application_1/widgets/ImageButtonWithFeedback.dart';
+import 'package:video_player/video_player.dart';
 
+import 'decision_video_screen.dart';
 
 class PauseScreen extends StatelessWidget {
-  const PauseScreen({super.key});
+  final VideoPlayerController videoController;
+
+  const PauseScreen({super.key, required this.videoController});
 
   void _resumeGame(BuildContext context) {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (_) => const DecisionVideoScreen()),
-    );
+    Navigator.pop(context); // Volver al video
   }
 
   void _exitToHome(BuildContext context) async {
@@ -29,62 +29,45 @@ class PauseScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFDF6FF),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
-              'Pausa',
-              style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+      backgroundColor: Colors.black,
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          // Frame pausado del video
+          AspectRatio(
+            aspectRatio: videoController.value.aspectRatio,
+            child: VideoPlayer(videoController),
+          ),
+
+          // Capa de contraste oscura
+          Container(
+            color: Colors.black.withOpacity(0.6),
+          ),
+
+          // Contenido central
+          Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Título visual
+                Image.asset(
+                  'assets/Textos/TituloApp.png',
+                  width: 220,
+                ),
+                const SizedBox(height: 40),
+                ImageButtonWithFeedback(
+                  imagePath: 'assets/Botones/Reaunudar_Pausa.png',
+                  onTap: () => _resumeGame(context),
+                ),
+                const SizedBox(height: 20),
+                ImageButtonWithFeedback(
+                  imagePath: 'assets/Botones/Salir_Pausa.png',
+                  onTap: () => _exitToHome(context),
+                ),
+              ],
             ),
-            const SizedBox(height: 40),
-            ImageButtonWithFeedback(
-              imagePath: 'assets/Botones/Reaunudar_Pausa.png',
-              onTap: () => _resumeGame(context),
-            ),
-            const SizedBox(height: 20),
-            ImageButtonWithFeedback(
-              imagePath: 'assets/Botones/Salir_Pausa.png',
-              onTap: () => _exitToHome(context),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class ImageButtonWithFeedback extends StatefulWidget {
-  final String imagePath;
-  final VoidCallback onTap;
-
-  const ImageButtonWithFeedback({
-    super.key,
-    required this.imagePath,
-    required this.onTap,
-  });
-
-  @override
-  State<ImageButtonWithFeedback> createState() => _ImageButtonWithFeedbackState();
-}
-
-class _ImageButtonWithFeedbackState extends State<ImageButtonWithFeedback> {
-  bool _pressed = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTapDown: (_) => setState(() => _pressed = true),
-      onTapUp: (_) {
-        setState(() => _pressed = false);
-        widget.onTap();
-      },
-      onTapCancel: () => setState(() => _pressed = false),
-      child: AnimatedOpacity(
-        duration: const Duration(milliseconds: 100),
-        opacity: _pressed ? 0.6 : 1.0,
-        child: Image.asset(widget.imagePath, width: 200),
+          ),
+        ],
       ),
     );
   }

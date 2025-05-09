@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_application_1/screens/decision_video_screen.dart';
-import 'package:flutter_application_1/widgets/ImageButtonWithFeedback.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -23,53 +22,133 @@ class HomeScreen extends StatelessWidget {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // Imagen de fondo completa
+          // Fondo
           Image.asset(
             'assets/Imagenes/Pantalla_Inicial.png',
             fit: BoxFit.cover,
           ),
 
-          // Contenido sobre el fondo
+          // Contenido principal
           Center(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Image.asset('assets/Logo/LogoAppIntro.png', width: 200),
-                const SizedBox(height: 20),
-                const Text(
-                  'CLOCK SPIRIT',
-                  style: TextStyle(
-                    fontSize: 36,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white, // Mejor visibilidad sobre fondo oscuro
+                // Título como imagen
+                Image.asset('assets/Textos/TituloApp.png', width: 220),
+
+                const SizedBox(height: 16),
+
+                // Personaje circular
+                Container(
+                  width: 120,
+                  height: 120,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.white,
+                    image: const DecorationImage(
+                      image: AssetImage('assets/Logo/LogoAppIntro.png'),
+                      fit: BoxFit.contain,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.4),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      )
+                    ],
                   ),
                 ),
+
                 const SizedBox(height: 20),
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 24),
-                  child: Text(
+
+                // Texto con panel semitransparente
+                Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 20),
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 16, horizontal: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.4),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: const Text(
                     'Lucha contra los Espíritus de la Miseria para salvar a sus amigos y tomar decisiones que impactarán sus destinos.',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.white,
-                    ),
+                    style: TextStyle(color: Colors.white, fontSize: 16),
                     textAlign: TextAlign.center,
                   ),
                 ),
-                const SizedBox(height: 40),
-                ImageButtonWithFeedback(
-                  imagePath: 'assets/Botones/Iniciar_Home.png',
+
+                const SizedBox(height: 30),
+
+                // Botón Iniciar
+                _CustomButton(
+                  label: 'Iniciar',
                   onTap: () => _startGame(context),
                 ),
-                const SizedBox(height: 20),
-                ImageButtonWithFeedback(
-                  imagePath: 'assets/Botones/Salir_Home.png',
+
+                const SizedBox(height: 16),
+
+                // Botón Salir
+                _CustomButton(
+                  label: 'Salir',
                   onTap: () => SystemNavigator.pop(),
                 ),
               ],
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _CustomButton extends StatefulWidget {
+  final String label;
+  final VoidCallback onTap;
+
+  const _CustomButton({
+    required this.label,
+    required this.onTap,
+  });
+
+  @override
+  State<_CustomButton> createState() => _CustomButtonState();
+}
+
+class _CustomButtonState extends State<_CustomButton> {
+  bool _pressed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: (_) => setState(() => _pressed = true),
+      onTapUp: (_) {
+        setState(() => _pressed = false);
+        widget.onTap();
+      },
+      onTapCancel: () => setState(() => _pressed = false),
+      child: AnimatedOpacity(
+        duration: const Duration(milliseconds: 100),
+        opacity: _pressed ? 0.6 : 1.0,
+        child: Container(
+          width: 160,
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.15),
+            border: Border.all(color: Colors.white),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Center(
+            child: Text(
+              widget.label,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+                letterSpacing: 1,
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
