@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_application_1/screens/decision_video_screen.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -22,23 +23,14 @@ class HomeScreen extends StatelessWidget {
       body: Stack(
         fit: StackFit.expand,
         children: [
-          // Fondo
-          Image.asset(
-            'assets/Imagenes/Pantalla_Inicial.png',
-            fit: BoxFit.cover,
-          ),
+          Image.asset('assets/Imagenes/Pantalla_Inicial.png', fit: BoxFit.cover),
 
-          // Contenido principal
           Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Título como imagen
                 Image.asset('assets/Textos/TituloApp.png', width: 220),
-
                 const SizedBox(height: 16),
-
-                // Personaje circular
                 Container(
                   width: 120,
                   height: 120,
@@ -58,14 +50,10 @@ class HomeScreen extends StatelessWidget {
                     ],
                   ),
                 ),
-
                 const SizedBox(height: 20),
-
-                // Texto con fondo
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 20),
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+                  padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
                   decoration: BoxDecoration(
                     color: Colors.black.withOpacity(0.4),
                     borderRadius: BorderRadius.circular(16),
@@ -76,20 +64,16 @@ class HomeScreen extends StatelessWidget {
                     textAlign: TextAlign.center,
                   ),
                 ),
-
                 const SizedBox(height: 30),
-
-                // Botón "Iniciar" como imagen
                 _ImageButton(
                   imagePath: 'assets/Botones/Iniciar_Home.png',
+                  soundPath: 'assets/Sounds/ButonIniciarExperiencia.mp3',
                   onTap: () => _startGame(context),
                 ),
-
                 const SizedBox(height: 16),
-
-                // Botón "Salir" como imagen
                 _ImageButton(
                   imagePath: 'assets/Botones/Salir_Home.png',
+                  soundPath: 'assets/Sounds/ButonSalir.mp3',
                   onTap: () => SystemNavigator.pop(),
                 ),
               ],
@@ -103,10 +87,12 @@ class HomeScreen extends StatelessWidget {
 
 class _ImageButton extends StatefulWidget {
   final String imagePath;
+  final String soundPath;
   final VoidCallback onTap;
 
   const _ImageButton({
     required this.imagePath,
+    required this.soundPath,
     required this.onTap,
   });
 
@@ -115,25 +101,38 @@ class _ImageButton extends StatefulWidget {
 }
 
 class _ImageButtonState extends State<_ImageButton> {
+  final AudioPlayer _audioPlayer = AudioPlayer();
   bool _pressed = false;
+
+  Future<void> _playSound() async {
+    try {
+      await _audioPlayer.play(AssetSource(widget.soundPath.replaceFirst('assets/', '')));
+    } catch (e) {
+      debugPrint('Error al reproducir sonido: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTapDown: (_) => setState(() => _pressed = true),
-      onTapUp: (_) {
+      onTapUp: (_) async {
         setState(() => _pressed = false);
+        await _playSound();
         widget.onTap();
       },
       onTapCancel: () => setState(() => _pressed = false),
       child: AnimatedOpacity(
         duration: const Duration(milliseconds: 100),
         opacity: _pressed ? 0.6 : 1.0,
-        child: Image.asset(
-          widget.imagePath,
-          width: 180,
-        ),
+        child: Image.asset(widget.imagePath, width: 180),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _audioPlayer.dispose();
+    super.dispose();
   }
 }

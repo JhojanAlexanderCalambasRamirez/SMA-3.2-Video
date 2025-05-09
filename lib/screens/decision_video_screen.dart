@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter_application_1/utils/decision_flow.dart';
 import 'package:flutter_application_1/utils/button_message_decision.dart';
 import 'package:flutter_application_1/utils/progress_bar.dart';
@@ -17,6 +18,7 @@ class DecisionVideoScreen extends StatefulWidget {
 class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
   final controller = DecisionFlowController();
   late VideoPlayerController _videoController;
+  final AudioPlayer _audioPlayer = AudioPlayer();
   bool _showButtons = false;
   bool _showFeedback = false;
   String _feedbackImage = '';
@@ -27,6 +29,10 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
   void initState() {
     super.initState();
     _initializeVideo();
+  }
+
+  Future<void> _playSound(String path) async {
+    await _audioPlayer.play(AssetSource(path));
   }
 
   void _initializeVideo() {
@@ -93,6 +99,11 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
   }
 
   void _continueAfterFeedback() {
+    final isGood = _feedbackImage.contains('exito');
+    _playSound(isGood
+        ? 'assets/Sounds/FeedBackDecisionBuena.mp3'
+        : 'assets/Sounds/FeedBackDecisionMala.mp3');
+
     setState(() => _showFeedback = false);
     final nextNode = controller.currentNode.positiveDecision;
     if (nextNode != null) {
@@ -103,6 +114,7 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
   }
 
   void _seekVideo(bool forward) {
+    _playSound('assets/Sounds/ButonControles.mp3');
     if (!_videoController.value.isInitialized) return;
     final pos = _videoController.value.position;
     final dur = _videoController.value.duration;
@@ -115,6 +127,7 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
   }
 
   void _togglePlayPause() {
+    _playSound('assets/Sounds/ButonControles.mp3');
     setState(() {
       _videoController.value.isPlaying
           ? _videoController.pause()
@@ -123,20 +136,21 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
   }
 
   void _openPauseMenu() {
-  _videoController.pause();
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (_) => PauseScreen(videoController: _videoController),
-    ),
-  );
-}
-
+    _playSound('assets/Sounds/ButonSalir.mp3');
+    _videoController.pause();
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => PauseScreen(videoController: _videoController),
+      ),
+    );
+  }
 
   @override
   void dispose() {
     _videoController.removeListener(_checkEnd);
     _videoController.dispose();
+    _audioPlayer.dispose();
     super.dispose();
   }
 

@@ -81,6 +81,10 @@ flutter:
     - assets/Textos/TituloApp.png
     - assets/Sounds/ButonIniciarExperiencia.mp3
     - assets/Sounds/ButonSalir.mp3
+    - assets/Sounds/ButonReaunudar.mp3
+    - assets/Sounds/ButonControles.mp3
+    - assets/Sounds/FeedBackDecisionBuena.mp3
+    - assets/Sounds/FeedBackDecisionMala.mp3
 
 flutter_native_splash:
   android: true

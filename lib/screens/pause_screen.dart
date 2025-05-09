@@ -1,21 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_application_1/screens/home_screen.dart';
-import 'package:flutter_application_1/widgets/ImageButtonWithFeedback.dart';
 import 'package:video_player/video_player.dart';
-
-import 'decision_video_screen.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 class PauseScreen extends StatelessWidget {
   final VideoPlayerController videoController;
 
   const PauseScreen({super.key, required this.videoController});
 
-  void _resumeGame(BuildContext context) {
+  Future<void> _playSound(String soundPath) async {
+    final player = AudioPlayer();
+    try {
+      await player.play(AssetSource(soundPath.replaceFirst('assets/', '')));
+    } catch (e) {
+      debugPrint('Error al reproducir sonido: $e');
+    }
+  }
+
+  void _resumeGame(BuildContext context) async {
+    await _playSound('assets/Sounds/ButonReaunudar.mp3');
     Navigator.pop(context); // Volver al video
   }
 
   void _exitToHome(BuildContext context) async {
+    await _playSound('assets/Sounds/ButonSalir.mp3');
     await SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
@@ -39,30 +48,29 @@ class PauseScreen extends StatelessWidget {
             child: VideoPlayer(videoController),
           ),
 
-          // Capa de contraste oscura
+          // Capa de oscurecimiento
           Container(
             color: Colors.black.withOpacity(0.6),
           ),
 
-          // Contenido central
+          // Contenido del menú
           Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Título visual
                 Image.asset(
                   'assets/Textos/TituloApp.png',
                   width: 220,
                 ),
                 const SizedBox(height: 40),
-                ImageButtonWithFeedback(
-                  imagePath: 'assets/Botones/Reaunudar_Pausa.png',
+                GestureDetector(
                   onTap: () => _resumeGame(context),
+                  child: Image.asset('assets/Botones/Reaunudar_Pausa.png', width: 200),
                 ),
                 const SizedBox(height: 20),
-                ImageButtonWithFeedback(
-                  imagePath: 'assets/Botones/Salir_Pausa.png',
+                GestureDetector(
                   onTap: () => _exitToHome(context),
+                  child: Image.asset('assets/Botones/Salir_Pausa.png', width: 200),
                 ),
               ],
             ),
