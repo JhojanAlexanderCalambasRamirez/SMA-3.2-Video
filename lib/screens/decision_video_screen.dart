@@ -1,13 +1,14 @@
+// IMPORTACIONES
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter_application_1/utils/decision_flow.dart';
 import 'package:flutter_application_1/utils/button_message_decision.dart';
 import 'package:flutter_application_1/utils/progress_bar.dart';
-import 'package:flutter_application_1/screens/summary_screen.dart';
 import 'package:flutter_application_1/screens/pause_screen.dart';
 import 'package:flutter_application_1/utils/FeedBackDecision.dart';
 
+// CONTROLADOR PRINCIPAL
 class DecisionVideoScreen extends StatefulWidget {
   const DecisionVideoScreen({super.key});
 
@@ -24,6 +25,7 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
   String _feedbackImage = '';
   bool _isLoading = true;
   List<String> _buttonMessages = ['', ''];
+  bool _isFinalVideo = false;
 
   @override
   void initState() {
@@ -38,6 +40,7 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
   void _initializeVideo() {
     final videoName = controller.currentNode.videoName;
     _buttonMessages = ButtonMessageDecision.getMessages(videoName);
+    _isFinalVideo = videoName.startsWith('Final');
 
     _videoController = VideoPlayerController.asset('assets/videos/$videoName.mp4')
       ..initialize().then((_) {
@@ -57,17 +60,16 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
     ].contains(currentVideo);
 
     if (_videoController.value.position >= _videoController.value.duration
-        && !_showButtons
-        && !_showFeedback) {
+        && !_showButtons && !_showFeedback) {
       _videoController.removeListener(_checkEnd);
 
       if (controller.currentNode.isFinal) {
         Future.delayed(const Duration(milliseconds: 500), () {
           if (mounted) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (_) => SummaryScreen()),
-            );
+            final finalVideo = controller.getFinal().videoName;
+            controller.setCurrentNode(DecisionNode(videoName: finalVideo));
+            _videoController.dispose();
+            _initializeVideo();
           }
         });
       } else if (isDecisionVideo) {
@@ -146,6 +148,14 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
     );
   }
 
+  void _resetExperience() {
+    controller.reset();
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (_) => const DecisionVideoScreen()),
+    );
+  }
+
   @override
   void dispose() {
     _videoController.removeListener(_checkEnd);
@@ -167,6 +177,33 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
                   child: VideoPlayer(_videoController),
                 ),
         ),
+        if (!_isLoading && _isFinalVideo)
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: Image.asset(
+              controller.positiveCount == 3
+                  ? 'assets/Imagenes/Final_Positivo.png'
+                  : controller.negativeCount == 3
+                      ? 'assets/Imagenes/Final_Negativo.png'
+                      : 'assets/Imagenes/Final_Neutral.png',
+              fit: BoxFit.cover,
+              height: 200,
+            ),
+          ),
+        if (!_isLoading && _isFinalVideo)
+          Positioned(
+            bottom: 40,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: ElevatedButton(
+                onPressed: _resetExperience,
+                child: const Text('Reiniciar Historia'),
+              ),
+            ),
+          ),
         if (!_isLoading)
           Positioned(
             top: 30,
@@ -185,7 +222,7 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
           positiveCount: controller.positiveCount,
           negativeCount: controller.negativeCount,
         ),
-        if (!_isLoading && !_showFeedback)
+        if (!_isLoading && !_showFeedback && !_isFinalVideo)
           Positioned(
             bottom: 0,
             left: 0,
@@ -241,7 +278,7 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
               ),
             ),
           ),
-        if (_showFeedback)
+        if (_showFeedback && !_isFinalVideo)
           Positioned.fill(
             child: FeedBackDecision(
               feedbackImage: _feedbackImage,
@@ -256,11 +293,7 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
 class DecisionButton extends StatefulWidget {
   final String text;
   final VoidCallback onTap;
-  const DecisionButton({
-    super.key,
-    required this.text,
-    required this.onTap,
-  });
+  const DecisionButton({super.key, required this.text, required this.onTap});
 
   @override
   State<DecisionButton> createState() => _DecisionButtonState();

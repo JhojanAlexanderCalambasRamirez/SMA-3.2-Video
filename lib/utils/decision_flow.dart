@@ -29,20 +29,12 @@ class DecisionFlowController {
   void _initializeFlow() {
     debugPrint('Inicializando el flujo de decisiones...');
 
-    final finalBueno = DecisionNode(videoName: 'FinalBueno');
-    final finalMalo = DecisionNode(videoName: 'FinalMalo');
-    final finalNeutro = DecisionNode(videoName: 'FinalNeutro');
-
     final escena4_1 = DecisionNode(
       videoName: 'Escena4_1',
-      positiveDecision: finalMalo,
-      negativeDecision: finalMalo,
     );
 
     final escena4_2 = DecisionNode(
       videoName: 'Escena4_2',
-      positiveDecision: finalBueno,
-      negativeDecision: finalBueno,
     );
 
     final escena4 = DecisionNode(
@@ -69,10 +61,22 @@ class DecisionFlowController {
       negativeDecision: escena3_1,
     );
 
-    final escena2 = DecisionNode(
-      videoName: 'Escena2',
+    final escena2_1 = DecisionNode(
+      videoName: 'Escena2_1',
       positiveDecision: escena3,
       negativeDecision: escena3,
+    );
+
+    final escena2_2 = DecisionNode(
+      videoName: 'Escena2_2',
+      positiveDecision: escena3,
+      negativeDecision: escena3,
+    );
+
+    final escena2 = DecisionNode(
+      videoName: 'Escena2',
+      positiveDecision: escena2_2,
+      negativeDecision: escena2_1,
     );
 
     _startNode = DecisionNode(
