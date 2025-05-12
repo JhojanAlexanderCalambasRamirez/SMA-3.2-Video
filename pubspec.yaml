@@ -41,15 +41,14 @@ flutter:
     - assets/Textos/
     - assets/videos/Escena1.mp4
     - assets/videos/Escena2.mp4
+    - assets/videos/Escena2_1.mp4
+    - assets/videos/Escena2_2.mp4
     - assets/videos/Escena3.mp4
     - assets/videos/Escena3_1.mp4
     - assets/videos/Escena3_2.mp4
     - assets/videos/Escena4.mp4
     - assets/videos/Escena4_1.mp4
     - assets/videos/Escena4_2.mp4
-    - assets/videos/Escena5.mp4
-    - assets/videos/Escena5_1.mp4
-    - assets/videos/Escena5_2.mp4
     - assets/videos/FinalBueno.mp4
     - assets/videos/FinalMalo.mp4
     - assets/videos/FinalNeutro.mp4
@@ -90,5 +89,5 @@ flutter_native_splash:
   android: true
   ios: true
   fullscreen: true
-  color: "#000000" # Color de respaldo
+  color: "#000000"
   background_image: assets/Imagenes/Pantalla_Carga.png

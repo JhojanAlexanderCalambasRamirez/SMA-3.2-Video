@@ -33,34 +33,16 @@ class DecisionFlowController {
     final finalMalo = DecisionNode(videoName: 'FinalMalo');
     final finalNeutro = DecisionNode(videoName: 'FinalNeutro');
 
-    final escena5_1 = DecisionNode(
-      videoName: 'Escena5_1',
+    final escena4_1 = DecisionNode(
+      videoName: 'Escena4_1',
       positiveDecision: finalMalo,
       negativeDecision: finalMalo,
     );
 
-    final escena5_2 = DecisionNode(
-      videoName: 'Escena5_2',
-      positiveDecision: finalBueno,
-      negativeDecision: finalBueno,
-    );
-
-    final escena5 = DecisionNode(
-      videoName: 'Escena5',
-      positiveDecision: escena5_2,
-      negativeDecision: escena5_1,
-    );
-
-    final escena4_1 = DecisionNode(
-      videoName: 'Escena4_1',
-      positiveDecision: escena5,
-      negativeDecision: escena5,
-    );
-
     final escena4_2 = DecisionNode(
       videoName: 'Escena4_2',
-      positiveDecision: escena5,
-      negativeDecision: escena5,
+      positiveDecision: finalBueno,
+      negativeDecision: finalBueno,
     );
 
     final escena4 = DecisionNode(

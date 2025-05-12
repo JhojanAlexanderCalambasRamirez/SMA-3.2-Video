@@ -49,11 +49,11 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
 
   void _checkEnd() {
     final currentVideo = controller.currentNode.videoName;
-    final isDecisionVideo = ['Escena3', 'Escena4', 'Escena5'].contains(currentVideo);
+    final isDecisionVideo = ['Escena2', 'Escena3', 'Escena4'].contains(currentVideo);
     final isPathAfterDecision = [
+      'Escena2_1', 'Escena2_2',
       'Escena3_1', 'Escena3_2',
-      'Escena4_1', 'Escena4_2',
-      'Escena5_1', 'Escena5_2'
+      'Escena4_1', 'Escena4_2'
     ].contains(currentVideo);
 
     if (_videoController.value.position >= _videoController.value.duration
