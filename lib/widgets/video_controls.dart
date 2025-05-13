@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
-const Color controlBackgroundColor = Color.fromARGB(116, 0, 0, 0);
-const EdgeInsets controlPadding = EdgeInsets.symmetric(vertical: 14, horizontal: 50);
 const double iconSize = 40.0;
 
+/// Widget principal de controles personalizados de video.
+/// Este será el ÚNICO que debe usarse y mantenerse en el proyecto.
 Widget videoControls({
   required VideoPlayerController controller,
   required VoidCallback onRewind,
@@ -13,10 +13,10 @@ Widget videoControls({
   required bool isPlaying,
 }) {
   return Container(
-    width: double.infinity,
-    height: 80,
-    color: controlBackgroundColor,
-    padding: controlPadding,
+    width: double.infinity, // Se extiende en todo el ancho
+    height: 90, // Altura del panel
+    padding: const EdgeInsets.symmetric(horizontal: 30),
+    color: const Color.fromARGB(137, 0, 0, 0), // Fondo semitransparente
     child: Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
@@ -26,9 +26,7 @@ Widget videoControls({
         ),
         IconButton(
           icon: Image.asset(
-            isPlaying
-                ? 'assets/Botones/Pause.png'
-                : 'assets/Botones/Play.png',
+            isPlaying ? 'assets/Botones/Pause.png' : 'assets/Botones/Play.png',
             height: iconSize,
           ),
           onPressed: onPlayPause,

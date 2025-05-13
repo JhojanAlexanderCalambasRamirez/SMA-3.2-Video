@@ -15,14 +15,13 @@ class NarrativeProgressBar extends StatelessWidget {
     final int total = (positiveCount + negativeCount).clamp(0, 3);
     final double progress = total / 3;
 
-    // Color de progreso según el resultado
     Color fillColor;
     if (positiveCount >= 3) {
-      fillColor = const Color(0xFFFFD600); // Amarillo
+      fillColor = const Color(0xFFFFD600);
     } else if (negativeCount >= 3) {
-      fillColor = const Color(0xFFE53935); // Rojo
+      fillColor = const Color(0xFFE53935); 
     } else {
-      fillColor = const Color(0xFF1E88E5); // Azul
+      fillColor = const Color(0xFF1E88E5);
     }
 
     return Positioned(
@@ -42,7 +41,7 @@ class NarrativeProgressBar extends StatelessWidget {
             ),
             Positioned(
               bottom: 4, // margen interno inferior
-              left: 8,   // alineación con borde blanco
+              left: 7,   // alineación con borde blanco
               right: 8,
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 300),

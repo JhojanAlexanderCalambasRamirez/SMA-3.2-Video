@@ -1,14 +1,9 @@
-// lib/utils/FeedBackDecision.dart
 import 'package:flutter/material.dart';
 
-/// Widget que muestra el feedback (éxito o fracaso) a pantalla completa
-/// y un botón “Continuar” en la parte inferior con efecto de opacidad al pulsar.
 class FeedBackDecision extends StatefulWidget {
-  /// Ruta de la imagen de fondo (éxito o fracaso).
-  final String feedbackImage;
-  /// Callback al pulsar el botón Continuar.
-  final VoidCallback onContinue;
 
+  final String feedbackImage;
+  final VoidCallback onContinue;
   const FeedBackDecision({
     Key? key,
     required this.feedbackImage,
@@ -26,7 +21,6 @@ class _FeedBackDecisionState extends State<FeedBackDecision> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        // Imagen de fondo
         Positioned.fill(
           child: Image.asset(
             widget.feedbackImage,
@@ -34,7 +28,6 @@ class _FeedBackDecisionState extends State<FeedBackDecision> {
           ),
         ),
 
-        // Botón “Continuar” abajo centrado
         Positioned(
           bottom: 30,
           left: 0,
@@ -52,7 +45,7 @@ class _FeedBackDecisionState extends State<FeedBackDecision> {
                 opacity: _pressed ? 0.6 : 1.0,
                 child: Image.asset(
                   'assets/Botones/Continuar_Decision.png',
-                  width: 200, // Ajusta al tamaño que prefieras
+                  width: 200,
                 ),
               ),
             ),
