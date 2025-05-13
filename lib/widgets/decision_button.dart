@@ -26,19 +26,22 @@ class _DecisionButtonState extends State<DecisionButton> {
         scale: _pressed ? 0.95 : 1.0,
         duration: const Duration(milliseconds: 100),
         child: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 8),
           decoration: BoxDecoration(
-            color: Colors.black.withOpacity(0.7),
+            color: Colors.black.withOpacity(0.6),
             borderRadius: BorderRadius.circular(20),
             border: Border.all(color: Colors.white, width: 1.5),
           ),
           padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
-          child: Text(
-            widget.text,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              fontSize: 14,
+          child: Center(
+            child: Text(
+              widget.text,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
+              ),
             ),
           ),
         ),

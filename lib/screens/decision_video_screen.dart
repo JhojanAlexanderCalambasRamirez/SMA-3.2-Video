@@ -221,7 +221,8 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
             left: 0,
             right: 0,
             child: _showButtons
-                ? Padding(
+                ? Container(
+                    color: Colors.black.withOpacity(0.6),
                     padding: const EdgeInsets.symmetric(
                         horizontal: 12, vertical: 10),
                     child: Row(
