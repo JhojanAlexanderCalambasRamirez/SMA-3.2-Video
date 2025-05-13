@@ -260,16 +260,12 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
                         ],
                       ),
                     )
-                  : Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 10),
-                      child: videoControls(
-                        controller: _videoController,
-                        onRewind: () => _seek(false),
-                        onPlayPause: _togglePlayPause,
-                        onForward: () => _seek(true),
-                        isPlaying: _videoController.value.isPlaying,
-                      ),
+                  : videoControls(
+                      controller: _videoController,
+                      onRewind: () => _seek(false),
+                      onPlayPause: _togglePlayPause,
+                      onForward: () => _seek(true),
+                      isPlaying: _videoController.value.isPlaying,
                     )),
         if (_showFeedback && !_isFinalVideo)
           Positioned.fill(
