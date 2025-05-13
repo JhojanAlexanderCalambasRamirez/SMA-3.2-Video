@@ -5,7 +5,6 @@ import 'package:flutter_application_1/utils/decision_flow.dart';
 import 'package:flutter_application_1/utils/button_message_decision.dart';
 import 'package:flutter_application_1/utils/progress_bar.dart';
 import 'package:flutter_application_1/screens/pause_screen.dart';
-import 'package:flutter_application_1/utils/FeedBackDecision.dart';
 import 'package:flutter_application_1/widgets/video_logic.dart';
 import 'package:flutter_application_1/widgets/video_state_handler.dart';
 import 'package:flutter_application_1/widgets/video_controls.dart';
@@ -184,36 +183,54 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
                   child: VideoPlayer(_videoController),
                 ),
         ),
-        if (!_isLoading && _showFeedback && _isFinalVideo)
+        // Imagen superpuesta al final del video
+        if ((_showFeedback || _isFinalVideo) && _feedbackImage.isNotEmpty)
           Positioned.fill(
-            child: Container(
-              color: Colors.black,
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  Positioned.fill(
-                    child: Image.asset(
-                      _feedbackImage,
-                      fit: BoxFit.cover,
-                    ),
+            child: IgnorePointer(
+              child: Image.asset(_feedbackImage, fit: BoxFit.cover),
+            ),
+          ),
+        // Botón para continuar después de feedback (no final)
+        if (_showFeedback && !_isFinalVideo)
+          Positioned(
+            bottom: 60,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: ElevatedButton(
+                onPressed: _continueAfterFeedback,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  foregroundColor: Colors.black,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
                   ),
-                  Positioned(
-                    bottom: 60,
-                    child: ElevatedButton(
-                      onPressed: _resetExperience,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: Colors.black,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 24, vertical: 12),
-                      ),
-                      child: const Text('Reiniciar Historia'),
-                    ),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                ),
+                child: const Text('Continuar'),
+              ),
+            ),
+          ),
+        // Botón para reiniciar historia si es final
+        if (_isFinalVideo && _showFeedback)
+          Positioned(
+            bottom: 60,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: ElevatedButton(
+                onPressed: _resetExperience,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  foregroundColor: Colors.black,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
                   ),
-                ],
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                ),
+                child: const Text('Reiniciar Historia'),
               ),
             ),
           ),
@@ -250,13 +267,6 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
                       onForward: () => _seek(true),
                       isPlaying: _videoController.value.isPlaying,
                     )),
-        if (_showFeedback && !_isFinalVideo)
-          Positioned.fill(
-            child: FeedBackDecision(
-              feedbackImage: _feedbackImage,
-              onContinue: _continueAfterFeedback,
-            ),
-          ),
       ]),
     );
   }

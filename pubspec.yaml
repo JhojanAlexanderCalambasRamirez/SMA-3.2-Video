@@ -52,8 +52,6 @@ flutter:
     - assets/videos/FinalBueno.mp4
     - assets/videos/FinalMalo.mp4
     - assets/videos/FinalNeutro.mp4
-    - assets/FeedBack/exito.png
-    - assets/FeedBack/fracaso.png
     - assets/Botones/left.svg
     - assets/Botones/right.svg
     - assets/Botones/left.png
@@ -74,6 +72,8 @@ flutter:
     - assets/Imagenes/Final_Neutral.png
     - assets/Imagenes/Final_Negativo.png
     - assets/Imagenes/Final_Positivo.png
+    - assets/FeedBack/exito.png
+    - assets/FeedBack/fracaso.png
     - assets/Imagenes/Pantalla_Inicial.png
     - assets/Imagenes/Pantalla_Logo.png
     - assets/Imagenes/Pantalla_Carga.png
