@@ -1,10 +1,14 @@
-// decision_button.dart
 import 'package:flutter/material.dart';
 
 class DecisionButton extends StatefulWidget {
   final String text;
   final VoidCallback onTap;
-  const DecisionButton({super.key, required this.text, required this.onTap});
+
+  const DecisionButton({
+    super.key,
+    required this.text,
+    required this.onTap,
+  });
 
   @override
   State<DecisionButton> createState() => _DecisionButtonState();

@@ -6,7 +6,6 @@ import 'package:flutter_application_1/utils/button_message_decision.dart';
 import 'package:flutter_application_1/utils/progress_bar.dart';
 import 'package:flutter_application_1/screens/pause_screen.dart';
 import 'package:flutter_application_1/utils/FeedBackDecision.dart';
-import 'package:flutter_application_1/widgets/decision_button.dart';
 import 'package:flutter_application_1/widgets/video_logic.dart';
 import 'package:flutter_application_1/widgets/video_state_handler.dart';
 import 'package:flutter_application_1/widgets/video_controls.dart';
@@ -238,27 +237,11 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
               left: 0,
               right: 0,
               child: _showButtons
-                  ? Container(
-                      color: Colors.black.withOpacity(0.6),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 10),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: DecisionButton(
-                              text: _buttonMessages[0],
-                              onTap: () => _makeDecision(true),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: DecisionButton(
-                              text: _buttonMessages[1],
-                              onTap: () => _makeDecision(false),
-                            ),
-                          ),
-                        ],
-                      ),
+                  ? decisionButtonsPanel(
+                      leftText: _buttonMessages[0],
+                      rightText: _buttonMessages[1],
+                      onLeftTap: () => _makeDecision(true),
+                      onRightTap: () => _makeDecision(false),
                     )
                   : videoControls(
                       controller: _videoController,

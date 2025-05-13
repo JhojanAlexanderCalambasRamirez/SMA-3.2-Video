@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
+import 'decision_button.dart';
 
 const double iconSize = 40.0;
 
 /// Widget principal de controles personalizados de video.
-/// Este será el ÚNICO que debe usarse y mantenerse en el proyecto.
 Widget videoControls({
   required VideoPlayerController controller,
   required VoidCallback onRewind,
@@ -13,10 +13,10 @@ Widget videoControls({
   required bool isPlaying,
 }) {
   return Container(
-    width: double.infinity, // Se extiende en todo el ancho
-    height: 90, // Altura del panel
+    width: double.infinity,
+    height: 90,
     padding: const EdgeInsets.symmetric(horizontal: 30),
-    color: const Color.fromARGB(137, 0, 0, 0), // Fondo semitransparente
+    color: const Color.fromARGB(137, 0, 0, 0),
     child: Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
@@ -34,6 +34,32 @@ Widget videoControls({
         IconButton(
           icon: Image.asset('assets/Botones/right.png', height: iconSize),
           onPressed: onForward,
+        ),
+      ],
+    ),
+  );
+}
+
+/// Panel con dos botones de decisión estilizados igual que el de controles.
+Widget decisionButtonsPanel({
+  required String leftText,
+  required String rightText,
+  required VoidCallback onLeftTap,
+  required VoidCallback onRightTap,
+}) {
+  return Container(
+    width: double.infinity,
+    height: 90,
+    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+    color: const Color.fromARGB(137, 0, 0, 0),
+    child: Row(
+      children: [
+        Expanded(
+          child: DecisionButton(text: leftText, onTap: onLeftTap),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: DecisionButton(text: rightText, onTap: onRightTap),
         ),
       ],
     ),
