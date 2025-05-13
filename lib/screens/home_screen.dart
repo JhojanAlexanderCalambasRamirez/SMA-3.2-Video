@@ -79,6 +79,24 @@ class HomeScreen extends StatelessWidget {
               ],
             ),
           ),
+
+          // Firma del desarrollador (parte inferior)
+          const Positioned(
+            bottom: 12,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: Text(
+                'Desarrollado - JACR',
+                style: TextStyle(
+                  color: Colors.white70,
+                  fontSize: 12,
+                  fontStyle: FontStyle.italic,
+                  letterSpacing: 0.5,
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
