@@ -57,7 +57,8 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
 
   void _checkEnd() {
     final name = controller.currentNode.videoName;
-    final finished = _videoController.value.position >= _videoController.value.duration;
+    final finished =
+        _videoController.value.position >= _videoController.value.duration;
     if (!finished || _showButtons || _showFeedback) return;
 
     _videoController.removeListener(_checkEnd);
@@ -190,7 +191,8 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 24, vertical: 12),
                       ),
                       child: const Text('Reiniciar Historia'),
                     ),
@@ -204,7 +206,8 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
             top: 30,
             right: 20,
             child: IconButton(
-              icon: Image.asset('assets/Botones/exit.png', width: 44, height: 44),
+              icon:
+                  Image.asset('assets/Botones/exit.png', width: 44, height: 44),
               onPressed: _openPauseMenu,
             ),
           ),
@@ -217,14 +220,11 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
             bottom: 0,
             left: 0,
             right: 0,
-            child: Container(
-              color: Colors.black.withOpacity(0.6),
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (_showButtons)
-                    Row(
+            child: _showButtons
+                ? Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 10),
+                    child: Row(
                       children: [
                         Expanded(
                           child: DecisionButton(
@@ -241,17 +241,22 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
                         ),
                       ],
                     ),
-                  const SizedBox(height: 10),
-                  videoControls(
-                    controller: _videoController,
-                    onRewind: () => VideoControlsHelper.seek(_videoController, false),
-                    onPlayPause: () => VideoControlsHelper.togglePlayPause(_videoController),
-                    onForward: () => VideoControlsHelper.seek(_videoController, true),
-                    isPlaying: _videoController.value.isPlaying,
+                  )
+                : Container(
+                    color: Colors.black.withOpacity(0.6),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 10),
+                    child: videoControls(
+                      controller: _videoController,
+                      onRewind: () =>
+                          VideoControlsHelper.seek(_videoController, false),
+                      onPlayPause: () =>
+                          VideoControlsHelper.togglePlayPause(_videoController),
+                      onForward: () =>
+                          VideoControlsHelper.seek(_videoController, true),
+                      isPlaying: _videoController.value.isPlaying,
+                    ),
                   ),
-                ],
-              ),
-            ),
           ),
         if (_showFeedback && !_isFinalVideo)
           Positioned.fill(

@@ -1,3 +1,4 @@
+// decision_button.dart
 import 'package:flutter/material.dart';
 
 class DecisionButton extends StatefulWidget {
@@ -26,18 +27,18 @@ class _DecisionButtonState extends State<DecisionButton> {
         duration: const Duration(milliseconds: 100),
         child: Container(
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.2),
-            borderRadius: BorderRadius.circular(30),
-            border: Border.all(color: Colors.white),
+            color: Colors.black.withOpacity(0.7),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: Colors.white, width: 1.5),
           ),
-          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
+          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
           child: Text(
             widget.text,
             textAlign: TextAlign.center,
             style: const TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.bold,
-              fontSize: 13,
+              fontSize: 14,
             ),
           ),
         ),
