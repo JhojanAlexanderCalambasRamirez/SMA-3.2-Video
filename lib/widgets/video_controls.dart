@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
-const Color controlBackgroundColor = Colors.black54;
-const EdgeInsets controlPadding = EdgeInsets.symmetric(vertical: 10, horizontal: 20);
+const Color controlBackgroundColor = Color.fromARGB(116, 0, 0, 0);
+const EdgeInsets controlPadding = EdgeInsets.symmetric(vertical: 14, horizontal: 50);
 const double iconSize = 40.0;
 
 Widget videoControls({
@@ -13,6 +13,8 @@ Widget videoControls({
   required bool isPlaying,
 }) {
   return Container(
+    width: double.infinity,
+    height: 80,
     color: controlBackgroundColor,
     padding: controlPadding,
     child: Row(
@@ -38,22 +40,4 @@ Widget videoControls({
       ],
     ),
   );
-}
-
-class VideoControlsHelper {
-  static void seek(VideoPlayerController controller, bool forward) {
-    if (!controller.value.isInitialized) return;
-    final pos = controller.value.position;
-    final dur = controller.value.duration;
-    var newPos = forward
-        ? pos + const Duration(seconds: 10)
-        : pos - const Duration(seconds: 10);
-    if (newPos < Duration.zero) newPos = Duration.zero;
-    if (newPos > dur) newPos = dur;
-    controller.seekTo(newPos);
-  }
-
-  static void togglePlayPause(VideoPlayerController controller) {
-    controller.value.isPlaying ? controller.pause() : controller.play();
-  }
 }

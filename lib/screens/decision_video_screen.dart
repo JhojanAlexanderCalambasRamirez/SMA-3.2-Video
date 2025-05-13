@@ -155,6 +155,24 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
     super.dispose();
   }
 
+  void _seek(bool forward) {
+    if (!_videoController.value.isInitialized) return;
+    final pos = _videoController.value.position;
+    final dur = _videoController.value.duration;
+    var newPos = forward
+        ? pos + const Duration(seconds: 10)
+        : pos - const Duration(seconds: 10);
+    if (newPos < Duration.zero) newPos = Duration.zero;
+    if (newPos > dur) newPos = dur;
+    _videoController.seekTo(newPos);
+  }
+
+  void _togglePlayPause() {
+    _videoController.value.isPlaying
+        ? _videoController.pause()
+        : _videoController.play();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -217,48 +235,43 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
         ),
         if (!_isLoading && !_showFeedback && !_isFinalVideo)
           Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: _showButtons
-                ? Container(
-                    color: Colors.black.withOpacity(0.6),
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 10),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: DecisionButton(
-                            text: _buttonMessages[0],
-                            onTap: () => _makeDecision(true),
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: _showButtons
+                  ? Container(
+                      color: Colors.black.withOpacity(0.6),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 10),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: DecisionButton(
+                              text: _buttonMessages[0],
+                              onTap: () => _makeDecision(true),
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: DecisionButton(
-                            text: _buttonMessages[1],
-                            onTap: () => _makeDecision(false),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: DecisionButton(
+                              text: _buttonMessages[1],
+                              onTap: () => _makeDecision(false),
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  )
-                : Container(
-                    color: Colors.black.withOpacity(0.6),
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 10),
-                    child: videoControls(
-                      controller: _videoController,
-                      onRewind: () =>
-                          VideoControlsHelper.seek(_videoController, false),
-                      onPlayPause: () =>
-                          VideoControlsHelper.togglePlayPause(_videoController),
-                      onForward: () =>
-                          VideoControlsHelper.seek(_videoController, true),
-                      isPlaying: _videoController.value.isPlaying,
-                    ),
-                  ),
-          ),
+                        ],
+                      ),
+                    )
+                  : Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 10),
+                      child: videoControls(
+                        controller: _videoController,
+                        onRewind: () => _seek(false),
+                        onPlayPause: _togglePlayPause,
+                        onForward: () => _seek(true),
+                        isPlaying: _videoController.value.isPlaying,
+                      ),
+                    )),
         if (_showFeedback && !_isFinalVideo)
           Positioned.fill(
             child: FeedBackDecision(
