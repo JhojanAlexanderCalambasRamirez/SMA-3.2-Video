@@ -1,4 +1,4 @@
-// IMPORTACIONES
+// decision_video_screen.dart
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:audioplayers/audioplayers.dart';
@@ -7,8 +7,11 @@ import 'package:flutter_application_1/utils/button_message_decision.dart';
 import 'package:flutter_application_1/utils/progress_bar.dart';
 import 'package:flutter_application_1/screens/pause_screen.dart';
 import 'package:flutter_application_1/utils/FeedBackDecision.dart';
+import 'package:flutter_application_1/widgets/decision_button.dart';
+import 'package:flutter_application_1/widgets/video_logic.dart';
+import 'package:flutter_application_1/widgets/video_state_handler.dart';
+import 'package:flutter_application_1/widgets/video_controls.dart';
 
-// CONTROLADOR PRINCIPAL
 class DecisionVideoScreen extends StatefulWidget {
   const DecisionVideoScreen({super.key});
 
@@ -19,81 +22,87 @@ class DecisionVideoScreen extends StatefulWidget {
 class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
   final controller = DecisionFlowController();
   late VideoPlayerController _videoController;
-  final AudioPlayer _audioPlayer = AudioPlayer();
+  final _audioPlayer = AudioPlayer();
   bool _showButtons = false;
   bool _showFeedback = false;
-  String _feedbackImage = '';
   bool _isLoading = true;
-  List<String> _buttonMessages = ['', ''];
   bool _isFinalVideo = false;
+  bool _finalFeedbackDisplayed = false;
+  String _feedbackImage = '';
+  List<String> _buttonMessages = ['', ''];
+  late VideoStateHandler _stateHandler;
 
   @override
   void initState() {
     super.initState();
+    _stateHandler = VideoStateHandler(controller);
     _initializeVideo();
-  }
-
-  Future<void> _playSound(String path) async {
-    await _audioPlayer.play(AssetSource(path));
   }
 
   void _initializeVideo() {
     final videoName = controller.currentNode.videoName;
     _buttonMessages = ButtonMessageDecision.getMessages(videoName);
     _isFinalVideo = videoName.startsWith('Final');
+    _finalFeedbackDisplayed = false;
 
-    _videoController = VideoPlayerController.asset('assets/videos/$videoName.mp4')
-      ..initialize().then((_) {
-        setState(() => _isLoading = false);
-        _videoController.play();
-        _videoController.addListener(_checkEnd);
+    VideoLogic.initializeVideo(videoName, (initializedController) {
+      _videoController = initializedController;
+      _videoController.addListener(_checkEnd);
+      _videoController.addListener(() {
+        if (mounted) setState(() {});
       });
+      setState(() => _isLoading = false);
+    });
   }
 
   void _checkEnd() {
-    final currentVideo = controller.currentNode.videoName;
-    final isDecisionVideo = ['Escena2', 'Escena3', 'Escena4'].contains(currentVideo);
-    final isPathAfterDecision = [
-      'Escena2_1', 'Escena2_2',
-      'Escena3_1', 'Escena3_2',
-      'Escena4_1', 'Escena4_2'
-    ].contains(currentVideo);
+    final name = controller.currentNode.videoName;
+    final finished = _videoController.value.position >= _videoController.value.duration;
+    if (!finished || _showButtons || _showFeedback) return;
 
-    if (_videoController.value.position >= _videoController.value.duration
-        && !_showButtons && !_showFeedback) {
-      _videoController.removeListener(_checkEnd);
+    _videoController.removeListener(_checkEnd);
 
-      if (controller.currentNode.isFinal) {
-        Future.delayed(const Duration(milliseconds: 500), () {
-          if (mounted) {
-            final finalVideo = controller.getFinal().videoName;
-            controller.setCurrentNode(DecisionNode(videoName: finalVideo));
-            _videoController.dispose();
-            _initializeVideo();
-          }
-        });
-      } else if (isDecisionVideo) {
-        setState(() => _showButtons = true);
-      } else if (isPathAfterDecision) {
-        setState(() {
-          _showFeedback = true;
-          _feedbackImage = currentVideo.endsWith('_2')
-              ? 'assets/FeedBack/exito.png'
-              : 'assets/FeedBack/fracaso.png';
-        });
-      } else {
-        final nextNode = controller.currentNode.positiveDecision;
-        if (nextNode != null) {
-          controller.setCurrentNode(nextNode);
+    if (_isFinalVideo && !_finalFeedbackDisplayed) {
+      Future.delayed(const Duration(milliseconds: 300), () {
+        if (mounted) {
+          setState(() {
+            _showFeedback = true;
+            _finalFeedbackDisplayed = true;
+            _feedbackImage = _stateHandler.getFinalFeedbackImage();
+          });
+        }
+      });
+    } else if (controller.currentNode.isFinal) {
+      Future.delayed(const Duration(milliseconds: 500), () {
+        if (mounted) {
+          controller.setCurrentNode(
+            DecisionNode(videoName: controller.getFinal().videoName),
+          );
           _videoController.dispose();
           _initializeVideo();
         }
+      });
+    } else if (VideoLogic.isDecisionVideo(name)) {
+      setState(() => _showButtons = true);
+    } else if (VideoLogic.isPathAfterDecision(name)) {
+      setState(() {
+        _showFeedback = true;
+        _feedbackImage = name.endsWith('_2')
+            ? 'assets/FeedBack/exito.png'
+            : 'assets/FeedBack/fracaso.png';
+      });
+    } else {
+      final next = controller.currentNode.positiveDecision;
+      if (next != null) {
+        controller.setCurrentNode(next);
+        _videoController.dispose();
+        _initializeVideo();
       }
     }
   }
 
   void _makeDecision(bool isPositive) {
-    controller.makeDecision(isPositive);
+    _stateHandler.makeDecision(isPositive);
     setState(() => _showButtons = false);
     _videoController.removeListener(_checkEnd);
     _videoController.dispose();
@@ -115,27 +124,8 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
     }
   }
 
-  void _seekVideo(bool forward) {
-    _playSound('assets/Sounds/ButonControles.mp3');
-    if (!_videoController.value.isInitialized) return;
-    final pos = _videoController.value.position;
-    final dur = _videoController.value.duration;
-    var newPos = forward
-        ? pos + const Duration(seconds: 10)
-        : pos - const Duration(seconds: 10);
-    if (newPos < Duration.zero) newPos = Duration.zero;
-    if (newPos > dur) newPos = dur;
-    _videoController.seekTo(newPos);
-  }
-
-  void _togglePlayPause() {
-    _playSound('assets/Sounds/ButonControles.mp3');
-    setState(() {
-      _videoController.value.isPlaying
-          ? _videoController.pause()
-          : _videoController.play();
-    });
-  }
+  void _playSound(String path) async =>
+      await _audioPlayer.play(AssetSource(path));
 
   void _openPauseMenu() {
     _playSound('assets/Sounds/ButonSalir.mp3');
@@ -149,7 +139,7 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
   }
 
   void _resetExperience() {
-    controller.reset();
+    _stateHandler.resetFlow();
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (_) => const DecisionVideoScreen()),
@@ -177,44 +167,44 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
                   child: VideoPlayer(_videoController),
                 ),
         ),
-        if (!_isLoading && _isFinalVideo)
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            child: Image.asset(
-              controller.positiveCount == 3
-                  ? 'assets/Imagenes/Final_Positivo.png'
-                  : controller.negativeCount == 3
-                      ? 'assets/Imagenes/Final_Negativo.png'
-                      : 'assets/Imagenes/Final_Neutral.png',
-              fit: BoxFit.cover,
-              height: 200,
-            ),
-          ),
-        if (!_isLoading && _isFinalVideo)
-          Positioned(
-            bottom: 40,
-            left: 0,
-            right: 0,
-            child: Center(
-              child: ElevatedButton(
-                onPressed: _resetExperience,
-                child: const Text('Reiniciar Historia'),
+        if (!_isLoading && _showFeedback && _isFinalVideo)
+          Positioned.fill(
+            child: Container(
+              color: Colors.black,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Positioned.fill(
+                    child: Image.asset(
+                      _feedbackImage,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  Positioned(
+                    bottom: 60,
+                    child: ElevatedButton(
+                      onPressed: _resetExperience,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: Colors.black,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      ),
+                      child: const Text('Reiniciar Historia'),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
-        if (!_isLoading)
+        if (!_isLoading && !_isFinalVideo)
           Positioned(
             top: 30,
             right: 20,
             child: IconButton(
-              icon: Image.asset(
-                'assets/Botones/exit.png',
-                width: 44,
-                height: 44,
-                fit: BoxFit.contain,
-              ),
+              icon: Image.asset('assets/Botones/exit.png', width: 44, height: 44),
               onPressed: _openPauseMenu,
             ),
           ),
@@ -252,27 +242,12 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
                       ],
                     ),
                   const SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      IconButton(
-                        icon: Image.asset('assets/Botones/left.png', height: 30),
-                        onPressed: () => _seekVideo(false),
-                      ),
-                      IconButton(
-                        icon: Image.asset(
-                          _videoController.value.isPlaying
-                              ? 'assets/Botones/Pause.png'
-                              : 'assets/Botones/Play.png',
-                          height: 30,
-                        ),
-                        onPressed: _togglePlayPause,
-                      ),
-                      IconButton(
-                        icon: Image.asset('assets/Botones/right.png', height: 30),
-                        onPressed: () => _seekVideo(true),
-                      ),
-                    ],
+                  videoControls(
+                    controller: _videoController,
+                    onRewind: () => VideoControlsHelper.seek(_videoController, false),
+                    onPlayPause: () => VideoControlsHelper.togglePlayPause(_videoController),
+                    onForward: () => VideoControlsHelper.seek(_videoController, true),
+                    isPlaying: _videoController.value.isPlaying,
                   ),
                 ],
               ),
@@ -286,52 +261,6 @@ class _DecisionVideoScreenState extends State<DecisionVideoScreen> {
             ),
           ),
       ]),
-    );
-  }
-}
-
-class DecisionButton extends StatefulWidget {
-  final String text;
-  final VoidCallback onTap;
-  const DecisionButton({super.key, required this.text, required this.onTap});
-
-  @override
-  State<DecisionButton> createState() => _DecisionButtonState();
-}
-
-class _DecisionButtonState extends State<DecisionButton> {
-  bool _pressed = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTapDown: (_) => setState(() => _pressed = true),
-      onTapUp: (_) {
-        setState(() => _pressed = false);
-        widget.onTap();
-      },
-      onTapCancel: () => setState(() => _pressed = false),
-      child: AnimatedScale(
-        scale: _pressed ? 0.95 : 1.0,
-        duration: const Duration(milliseconds: 100),
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.2),
-            borderRadius: BorderRadius.circular(30),
-            border: Border.all(color: Colors.white),
-          ),
-          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
-          child: Text(
-            widget.text,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              fontSize: 13,
-            ),
-          ),
-        ),
-      ),
     );
   }
 }
