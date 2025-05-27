@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_application_1/screens/home_screen.dart';
+import '../screens/home_screen.dart';
 import 'package:audioplayers/audioplayers.dart';
 
 class FinalFeedbackScreen extends StatelessWidget {

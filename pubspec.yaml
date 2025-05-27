@@ -1,6 +1,6 @@
-name: flutter_application_1
-description: A new Flutter project.
-publish_to: 'none'
+name: clock_spirit
+description: Juego narrativo interactivo desarrollado en Flutter.
+publish_to: 'none' # No se publica en pub.dev
 
 version: 1.0.0+1
 
@@ -27,6 +27,12 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^3.0.0
   flutter_native_splash: ^2.4.0
+  flutter_launcher_icons: ^0.13.1
+
+flutter_icons:
+  android: true
+  ios: false
+  image_path: "assets/Logo/LogoApp.png"
 
 flutter:
   uses-material-design: true
@@ -56,7 +62,7 @@ flutter:
     - assets/Botones/right.svg
     - assets/Botones/left.png
     - assets/Botones/right.png
-    - assets/Botones/Exit.svg
+    - assets/Botones/exit.png
     - assets/Botones/Play.png
     - assets/Botones/Pause.png
     - assets/Botones/Salir_Pausa.png
@@ -84,6 +90,7 @@ flutter:
     - assets/Sounds/ButonControles.mp3
     - assets/Sounds/FeedBackDecisionBuena.mp3
     - assets/Sounds/FeedBackDecisionMala.mp3
+    - assets/Logo/LogoApp.png
 
 flutter_native_splash:
   android: true

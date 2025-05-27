@@ -1,4 +1,4 @@
-import 'package:flutter_application_1/utils/decision_flow.dart';
+import '../utils/decision_flow.dart';
 
 class VideoStateHandler {
   final DecisionFlowController controller;

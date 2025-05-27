@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:audioplayers/audioplayers.dart';
-import 'package:flutter_application_1/utils/decision_flow.dart';
-import 'package:flutter_application_1/utils/button_message_decision.dart';
-import 'package:flutter_application_1/utils/progress_bar.dart';
-import 'package:flutter_application_1/screens/pause_screen.dart';
-import 'package:flutter_application_1/utils/FeedBackDecision.dart';
-import 'package:flutter_application_1/widgets/video_logic.dart';
-import 'package:flutter_application_1/widgets/video_state_handler.dart';
-import 'package:flutter_application_1/widgets/video_controls.dart';
+import '../utils/decision_flow.dart';
+import '../utils/button_message_decision.dart';
+import '../utils/progress_bar.dart';
+import '../screens/pause_screen.dart';
+import '../utils/FeedBackDecision.dart';
+import '../widgets/video_logic.dart';
+import '../widgets/video_state_handler.dart';
+import '../widgets/video_controls.dart';
 
 class DecisionVideoScreen extends StatefulWidget {
   const DecisionVideoScreen({super.key});

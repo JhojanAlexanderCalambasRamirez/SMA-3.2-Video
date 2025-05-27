@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_application_1/screens/decision_video_screen.dart';
+import '../screens/decision_video_screen.dart';
 import 'package:audioplayers/audioplayers.dart';
 
 class HomeScreen extends StatelessWidget {

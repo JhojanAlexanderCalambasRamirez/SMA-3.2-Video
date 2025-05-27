@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/screens/decision_video_screen.dart';
+import '../screens/decision_video_screen.dart';
 
 class UploadScreen extends StatefulWidget {
   const UploadScreen({super.key});
